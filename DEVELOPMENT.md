@@ -90,9 +90,17 @@ This collection is part of the Cloud-Native Ansible Lifecycle platform:
 
 ## Links
 
-- **Platform Docs**: ../specs/001-cloud-native-ansible-lifecycle/
-- **AAP Config**: ../aap-config-as-code/
-- **Cluster Config**: ../cluster-config/
+### Related Repositories
+- **Cluster Config** (Platform GitOps): https://github.com/djdanielsson/rh1-cluster-config
+- **AAP Config as Code**: https://github.com/djdanielsson/rh1-aap-config-as-code
+- **Execution Environment**: https://github.com/djdanielsson/rh1-custom-ee
+- **Release Manifests**: https://github.com/djdanielsson/rh1-release-manifest
+
+### Documentation
+- **Project Workspace**: https://github.com/djdanielsson/rh1_ansible_code_lifecycle
+- **Platform Specs**: https://github.com/djdanielsson/rh1_ansible_code_lifecycle/tree/main/specs/001-cloud-native-ansible-lifecycle
+- **Molecule Docs**: https://molecule.readthedocs.io/
+- **Ansible-Lint**: https://ansible-lint.readthedocs.io/
 
 ---
 
