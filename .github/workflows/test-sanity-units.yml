@@ -1,0 +1,103 @@
+---
+name: Test - Sanity & Units
+# Using ansible-content-actions for comprehensive testing
+
+on:
+  push:
+    branches: ['**']
+    paths:
+      - 'roles/**'
+      - 'plugins/**'
+      - 'tests/**'
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  # Sanity tests using ansible-test-gh-action
+  sanity:
+    name: Sanity (Ansible ${{ matrix.ansible }})
+    strategy:
+      fail-fast: false
+      matrix:
+        ansible:
+          - stable-2.15
+          - stable-2.16
+          - stable-2.17
+          - devel
+        python-version:
+          - '3.10'
+          - '3.11'
+          - '3.12'
+        exclude:
+          # Exclude unsupported combinations
+          - ansible: stable-2.15
+            python-version: '3.12'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Perform sanity testing
+        uses: ansible-community/ansible-test-gh-action@release/v1
+        with:
+          ansible-core-version: ${{ matrix.ansible }}
+          testing-type: sanity
+          test-deps: >-
+            ansible.posix
+            ansible.utils
+            community.general
+          pull-request-change-detection: true
+          python-version: ${{ matrix.python-version }}
+
+  # Unit tests using ansible-test-gh-action  
+  units:
+    name: Units (Ansible ${{ matrix.ansible }})
+    strategy:
+      fail-fast: false
+      matrix:
+        ansible:
+          - stable-2.15
+          - stable-2.16
+          - stable-2.17
+          - devel
+        python-version:
+          - '3.10'
+          - '3.11'
+          - '3.12'
+        exclude:
+          - ansible: stable-2.15
+            python-version: '3.12'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Perform unit testing
+        uses: ansible-community/ansible-test-gh-action@release/v1
+        with:
+          ansible-core-version: ${{ matrix.ansible }}
+          testing-type: units
+          test-deps: >-
+            ansible.posix
+            ansible.utils
+            community.general
+          pull-request-change-detection: true
+          python-version: ${{ matrix.python-version }}
+          coverage: auto
+
+      - name: Upload Coverage Reports
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./tests/output/reports/coverage.xml
+          flags: units
+          name: units-${{ matrix.ansible }}-py${{ matrix.python-version }}
+
+  # Final check job to gate branch protection
+  check:
+    name: Test Status Check
+    if: always()
+    needs:
+      - sanity
+      - units
+    runs-on: ubuntu-latest
+    steps:
+      - name: Decide whether all required jobs succeeded or failed
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
+

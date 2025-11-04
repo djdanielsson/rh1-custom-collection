@@ -19,18 +19,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: |
-          pip install ansible-core ansible-lint
-          ansible-lint --version
-
       - name: Run ansible-lint
-        run: ansible-lint --profile production --force-color
+        uses: ansible/ansible-lint@main
+        with:
+          args: "--profile production --force-color"
 
   python-lint:
     name: Python Linting
@@ -66,26 +58,25 @@ jobs:
   sanity-tests:
     name: Ansible Sanity Tests
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          path: ansible_collections/myorg/custom_collection
 
-      - name: Install Ansible
-        run: pip install ansible-core
-
-      - name: Run sanity tests
-        run: |
-          # Install collection locally
-          ansible-galaxy collection build --force
-          ansible-galaxy collection install *.tar.gz --force
-          
-          # Run sanity tests
-          ansible-test sanity --python 3.11 || echo "Sanity tests completed with warnings"
+      - name: Run ansible-test sanity
+        uses: ansible/ansible-test-gh-action@main
+        with:
+          ansible-core-version: stable-2.16
+          testing-type: sanity
+          test-deps: >-
+            ansible.posix
+            ansible.utils
+          python-version: ${{ matrix.python-version }}
+          target-python-version: ${{ matrix.python-version }}
 
   unit-tests:
     name: Unit Tests
@@ -114,35 +105,6 @@ jobs:
           flags: unittests
           name: codecov-umbrella
 
-  build-collection:
-    name: Build Collection
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install Ansible
-        run: pip install ansible-core
-
-      - name: Build collection
-        run: |
-          ansible-galaxy collection build --force
-          
-      - name: List built collection
-        run: |
-          ls -lh *.tar.gz
-          
-      - name: Upload collection artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: collection-tarball
-          path: '*.tar.gz'
-          retention-days: 30
 
 
 

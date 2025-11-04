@@ -1,0 +1,54 @@
+---
+name: Integration Tests
+# Using ansible-test-gh-action for integration testing
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'roles/**'
+      - 'plugins/**'
+      - 'tests/integration/**'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'roles/**'
+      - 'plugins/**'
+      - 'tests/integration/**'
+  workflow_dispatch:
+
+jobs:
+  integration:
+    name: Integration (Ansible ${{ matrix.ansible }})
+    strategy:
+      fail-fast: false
+      matrix:
+        ansible:
+          - stable-2.16
+          - stable-2.17
+          - devel
+        python-version:
+          - '3.11'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Perform integration testing
+        uses: ansible-community/ansible-test-gh-action@release/v1
+        with:
+          ansible-core-version: ${{ matrix.ansible }}
+          testing-type: integration
+          test-deps: >-
+            ansible.posix
+            ansible.utils
+            community.general
+          target: ""  # Run all integration tests
+          python-version: ${{ matrix.python-version }}
+          coverage: auto
+
+      - name: Upload Integration Coverage
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./tests/output/reports/coverage.xml
+          flags: integration
+          name: integration-${{ matrix.ansible }}
+
