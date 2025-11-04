@@ -1,0 +1,58 @@
+---
+# Molecule scenario for testing on CentOS/RHEL-like systems
+dependency:
+  name: galaxy
+  options:
+    requirements-file: ../../../../collections/requirements.yml
+
+driver:
+  name: docker
+
+platforms:
+  - name: centos-instance
+    image: docker.io/geerlingguy/docker-rockylinux9-ansible:latest
+    pre_build_image: true
+    privileged: true
+    command: /usr/sbin/init
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    tmpfs:
+      - /run
+      - /tmp
+
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callbacks_enabled: profile_tasks,timer,yaml
+      stdout_callback: yaml
+  playbooks:
+    converge: ../default/converge.yml
+    verify: ../default/verify.yml
+  inventory:
+    host_vars:
+      centos-instance:
+        ansible_python_interpreter: /usr/bin/python3
+
+verifier:
+  name: ansible
+
+scenario:
+  name: centos
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - side_effect
+    - verify
+    - cleanup
+    - destroy
+
+
+

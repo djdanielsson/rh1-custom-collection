@@ -1,0 +1,95 @@
+---
+# Ansible Lint Configuration for automation-collection-example
+# Production profile for collection development
+
+# Use production profile (strict)
+profile: production
+
+# Exclude certain paths
+exclude_paths:
+  - .git/
+  - .github/
+  - venv/
+  - .venv/
+  - .tox/
+  - tests/output/
+  - changelogs/
+  - .secrets.baseline
+  - galaxy.yml
+  - meta/runtime.yml
+
+# Skip certain rules if needed
+skip_list:
+  # Skip galaxy rule during development
+  - galaxy[version-incorrect]
+  
+  # Skip experimental rules
+  - experimental
+
+# Warn only for certain rules
+warn_list:
+  - jinja[spacing]
+  - yaml[line-length]
+  - name[casing]
+
+# Enable offline mode (don't check for collection updates)
+offline: false
+
+# Use default rules
+use_default_rules: true
+
+# Custom rules
+rules:
+  # Require full FQCN for modules
+  fqcn:
+    enabled: true
+
+  # Require names for all tasks
+  name:
+    enabled: true
+
+  # Check variable naming
+  var-naming:
+    enabled: true
+
+  # Enforce role naming conventions
+  role-name:
+    enabled: true
+
+# Parser configuration
+parseable: true
+quiet: false
+verbosity: 1
+
+# Write to file
+write_list:
+  - none
+
+# Progressive mode (show all issues)
+progressive: false
+
+# Task settings
+task_name_prefix: "{stem} | "
+
+# Mock modules and roles for testing
+mock_modules:
+  - myorg.custom_collection.sample_module
+  - myorg.custom_collection.sample_action
+
+mock_roles:
+  - myorg.custom_collection.run
+
+# Set kinds for proper parsing
+kinds:
+  - yaml: "**/*.yaml"
+  - yaml: "**/*.yml"
+  - playbook: "**/molecule/*/converge.yml"
+  - playbook: "**/molecule/*/verify.yml"
+  - vars: "**/defaults/*.yml"
+  - vars: "**/vars/*.yml"
+  - meta: "**/meta/main.yml"
+  - tasks: "**/tasks/*.yml"
+  - handlers: "**/handlers/*.yml"
+
+
+

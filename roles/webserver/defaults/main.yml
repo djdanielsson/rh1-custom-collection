@@ -1,0 +1,44 @@
+---
+# defaults file for webserver
+
+# Package configuration
+webserver_packages:
+  - httpd
+
+# Service configuration
+webserver_service: httpd
+webserver_port: 80
+
+# User and group
+webserver_user: apache
+webserver_group: apache
+
+# Document root
+webserver_document_root: /var/www/html
+
+# Configuration
+webserver_config_template: httpd.conf.j2
+webserver_config_path: /etc/httpd/conf/httpd.conf
+webserver_config_validate: /usr/sbin/httpd -t -f %s
+
+# Firewall
+webserver_configure_firewall: true
+webserver_firewall_services:
+  - http
+  - https
+
+# Verification
+webserver_verify_response: true
+
+# Server configuration
+webserver_server_admin: admin@example.com
+webserver_server_name: "{{ ansible_fqdn }}"
+webserver_listen_port: "{{ webserver_port }}"
+
+# Logging
+webserver_error_log: logs/error_log
+webserver_access_log: logs/access_log combined
+
+# Security
+webserver_server_tokens: Prod
+webserver_server_signature: "Off"

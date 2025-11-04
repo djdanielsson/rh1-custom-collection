@@ -1,0 +1,85 @@
+---
+name: Molecule Tests
+
+on:
+  push:
+    branches: ['**']
+    paths:
+      - 'roles/**'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'roles/**'
+  workflow_dispatch:
+
+jobs:
+  list-scenarios:
+    name: List Molecule Scenarios
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.list-scenarios.outputs.matrix }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: List scenarios
+        id: list-scenarios
+        run: |
+          scenarios=$(find roles/*/molecule/*/molecule.yml -type f | jq -R -s -c 'split("\n") | map(select(length > 0)) | map(split("/") | {role: .[1], scenario: .[3]})')
+          echo "matrix=$scenarios" >> $GITHUB_OUTPUT
+          echo "Found scenarios:"
+          echo "$scenarios" | jq
+
+  molecule:
+    name: Molecule Test
+    runs-on: ubuntu-latest
+    needs: list-scenarios
+    if: needs.list-scenarios.outputs.matrix != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario: ${{ fromJson(needs.list-scenarios.outputs.matrix) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r test-requirements.txt
+          pip install molecule molecule-plugins[docker] ansible-core
+
+      - name: Run Molecule test
+        run: |
+          cd roles/${{ matrix.scenario.role }}
+          molecule test -s ${{ matrix.scenario.scenario }}
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+
+  molecule-summary:
+    name: Molecule Test Summary
+    runs-on: ubuntu-latest
+    needs: [list-scenarios, molecule]
+    if: always()
+    steps:
+      - name: Generate summary
+        run: |
+          echo "# Molecule Test Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Results" >> $GITHUB_STEP_SUMMARY
+          echo "- List Scenarios: ${{ needs.list-scenarios.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Molecule Tests: ${{ needs.molecule.result }}" >> $GITHUB_STEP_SUMMARY
+          
+      - name: Check if all tests passed
+        if: needs.molecule.result != 'success'
+        run: |
+          echo "❌ Some Molecule tests failed"
+          exit 1
+
+
+

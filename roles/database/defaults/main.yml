@@ -1,0 +1,30 @@
+---
+# defaults file for database
+
+# Package configuration
+database_packages:
+  - postgresql
+  - postgresql-server
+  - postgresql-contrib
+  - python3-psycopg2
+
+# Service
+database_service: postgresql
+
+# Configuration directories
+database_config_dir: /var/lib/pgsql/data
+database_data_dir: /var/lib/pgsql/data
+
+# PostgreSQL settings
+database_listen_addresses: localhost
+database_port: 5432
+database_max_connections: 100
+database_shared_buffers: 128MB
+
+# Database and user (set these in your playbook)
+# database_name: myapp
+# database_user: myapp_user
+# database_password: "{{ lookup('env', 'DB_PASSWORD') }}"
+
+# Firewall
+database_configure_firewall: false

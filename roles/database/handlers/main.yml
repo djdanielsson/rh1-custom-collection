@@ -1,0 +1,13 @@
+---
+# handlers file for database
+- name: restart database
+  ansible.builtin.service:
+    name: "{{ database_service }}"
+    state: restarted
+  become: true
+
+- name: reload database
+  ansible.builtin.service:
+    name: "{{ database_service }}"
+    state: reloaded
+  become: true

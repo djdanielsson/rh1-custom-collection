@@ -1,0 +1,71 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: true
+  become: true
+
+  tasks:
+    - name: Check if httpd package is installed
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Verify httpd is installed
+      ansible.builtin.assert:
+        that:
+          - "'httpd' in ansible_facts.packages"
+        fail_msg: "httpd package is not installed"
+        success_msg: "httpd package is installed"
+
+    - name: Check if httpd service is running
+      ansible.builtin.service_facts:
+
+    - name: Verify httpd service is running
+      ansible.builtin.assert:
+        that:
+          - "ansible_facts.services['httpd.service'].state == 'running'"
+          - "ansible_facts.services['httpd.service'].status == 'enabled'"
+        fail_msg: "httpd service is not running or enabled"
+        success_msg: "httpd service is running and enabled"
+
+    - name: Check if document root exists
+      ansible.builtin.stat:
+        path: /var/www/html
+      register: doc_root
+
+    - name: Verify document root exists
+      ansible.builtin.assert:
+        that:
+          - doc_root.stat.exists
+          - doc_root.stat.isdir
+        fail_msg: "Document root does not exist"
+        success_msg: "Document root exists"
+
+    - name: Check if index.html exists
+      ansible.builtin.stat:
+        path: /var/www/html/index.html
+      register: index_file
+
+    - name: Verify index.html exists
+      ansible.builtin.assert:
+        that:
+          - index_file.stat.exists
+        fail_msg: "index.html does not exist"
+        success_msg: "index.html exists"
+
+    - name: Check web server response
+      ansible.builtin.uri:
+        url: http://localhost:80
+        status_code: 200
+        return_content: true
+      register: web_response
+
+    - name: Verify web server is responding
+      ansible.builtin.assert:
+        that:
+          - web_response.status == 200
+          - "'Welcome to' in web_response.content"
+        fail_msg: "Web server is not responding correctly"
+        success_msg: "Web server is responding correctly"
+
+
+

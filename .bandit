@@ -1,0 +1,26 @@
+[bandit]
+# Bandit configuration for Python security scanning
+
+# Exclude paths
+exclude_dirs = ['/tests/', '/.tox/', '/.venv/', '/venv/']
+
+# Test IDs to skip
+skips = [
+  'B404',  # import subprocess - needed for some modules
+  'B603',  # subprocess without shell=True - we check this
+]
+
+# Severity level
+severity = medium
+
+# Confidence level
+confidence = medium
+
+# Maximum number of lines to report
+max_lines_per_issue = 5
+
+# Test IDs to run (empty = all)
+tests = []
+
+
+

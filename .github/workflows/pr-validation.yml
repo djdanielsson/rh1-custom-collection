@@ -1,0 +1,192 @@
+---
+name: Pull Request Validation
+
+on:
+  pull_request:
+    branches: [main, master]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  pr-info:
+    name: PR Information
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v41
+
+      - name: Detect component changes
+        run: |
+          echo "### Changed Components" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if echo "${{ steps.changed-files.outputs.all_changed_files }}" | grep -q "roles/"; then
+            echo "- 📁 **Roles** modified" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if echo "${{ steps.changed-files.outputs.all_changed_files }}" | grep -q "plugins/modules/"; then
+            echo "- 🔌 **Modules** modified" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if echo "${{ steps.changed-files.outputs.all_changed_files }}" | grep -q "plugins/filter/"; then
+            echo "- 🔍 **Filters** modified" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if echo "${{ steps.changed-files.outputs.all_changed_files }}" | grep -q "plugins/lookup/"; then
+            echo "- 🔎 **Lookups** modified" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  check-galaxy-version:
+    name: Check Galaxy Version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if galaxy.yml version changed
+        id: version-check
+        run: |
+          if git diff origin/main galaxy.yml | grep -q "^+version:"; then
+            echo "version_changed=true" >> $GITHUB_OUTPUT
+            NEW_VERSION=$(grep "^version:" galaxy.yml | awk '{print $2}')
+            echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+            echo "✅ Version changed to: $NEW_VERSION"
+          else
+            echo "version_changed=false" >> $GITHUB_OUTPUT
+            echo "⚠️  Version not changed in galaxy.yml"
+          fi
+
+      - name: Check version in CHANGELOG
+        if: steps.version-check.outputs.version_changed == 'true'
+        run: |
+          VERSION=${{ steps.version-check.outputs.new_version }}
+          if ! grep -q "$VERSION" CHANGELOG.rst; then
+            echo "⚠️  WARNING: Version $VERSION not found in CHANGELOG.rst"
+            echo "Please update the changelog"
+          else
+            echo "✅ Version $VERSION found in CHANGELOG.rst"
+          fi
+
+  check-documentation:
+    name: Check Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check README exists
+        run: |
+          if [ ! -f README.md ]; then
+            echo "❌ README.md not found"
+            exit 1
+          fi
+
+      - name: Check role documentation
+        run: |
+          echo "Checking role documentation..."
+          for role_dir in roles/*; do
+            if [ -d "$role_dir" ]; then
+              role_name=$(basename "$role_dir")
+              if [ ! -f "$role_dir/README.md" ]; then
+                echo "⚠️  WARNING: Role $role_name has no README.md"
+              else
+                echo "✅ Role $role_name has README.md"
+              fi
+            fi
+          done
+
+      - name: Check module documentation
+        run: |
+          echo "Checking module documentation..."
+          for module in plugins/modules/*.py; do
+            if [ -f "$module" ] && [[ $(basename "$module") != "__init__.py" ]]; then
+              module_name=$(basename "$module")
+              if ! grep -q "DOCUMENTATION = " "$module"; then
+                echo "⚠️  WARNING: Module $module_name missing DOCUMENTATION"
+              fi
+              if ! grep -q "EXAMPLES = " "$module"; then
+                echo "⚠️  WARNING: Module $module_name missing EXAMPLES"
+              fi
+              if ! grep -q "RETURN = " "$module"; then
+                echo "⚠️  WARNING: Module $module_name missing RETURN"
+              fi
+            fi
+          done
+
+  check-tests:
+    name: Check Test Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check Molecule tests exist
+        run: |
+          echo "Checking for Molecule tests..."
+          for role_dir in roles/*; do
+            if [ -d "$role_dir" ]; then
+              role_name=$(basename "$role_dir")
+              if [ ! -d "$role_dir/molecule" ]; then
+                echo "⚠️  WARNING: Role $role_name has no molecule tests"
+              else
+                echo "✅ Role $role_name has molecule tests"
+              fi
+            fi
+          done
+
+  collection-structure:
+    name: Validate Collection Structure
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check required files
+        run: |
+          required_files=("galaxy.yml" "README.md" "CHANGELOG.rst")
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ Required file missing: $file"
+              exit 1
+            fi
+            echo "✅ Found $file"
+          done
+
+      - name: Check directory structure
+        run: |
+          required_dirs=("roles" "plugins")
+          for dir in "${required_dirs[@]}"; do
+            if [ ! -d "$dir" ]; then
+              echo "❌ Required directory missing: $dir"
+              exit 1
+            fi
+            echo "✅ Found $dir/"
+          done
+
+  summary:
+    name: Validation Summary
+    runs-on: ubuntu-latest
+    needs: [pr-info, check-galaxy-version, check-documentation, check-tests, collection-structure]
+    if: always()
+    steps:
+      - name: Generate summary
+        run: |
+          echo "# Collection Validation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| PR Info | ${{ needs.pr-info.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Galaxy Version | ${{ needs.check-galaxy-version.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Documentation | ${{ needs.check-documentation.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Test Coverage | ${{ needs.check-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Collection Structure | ${{ needs.collection-structure.result }} |" >> $GITHUB_STEP_SUMMARY
+
+
+

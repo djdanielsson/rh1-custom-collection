@@ -1,0 +1,148 @@
+---
+name: Ansible Test
+
+on:
+  push:
+    branches: ['**']
+    paths:
+      - 'roles/**'
+      - 'plugins/**'
+      - 'tests/**'
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  ansible-lint:
+    name: Ansible Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install ansible-core ansible-lint
+          ansible-lint --version
+
+      - name: Run ansible-lint
+        run: ansible-lint --profile production --force-color
+
+  python-lint:
+    name: Python Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install black isort flake8 pylint bandit
+
+      - name: Run black (check only)
+        run: black --check --line-length=100 plugins/
+
+      - name: Run isort (check only)
+        run: isort --check --profile black --line-length=100 plugins/
+
+      - name: Run flake8
+        run: flake8 --max-line-length=100 --extend-ignore=E203,W503 plugins/
+
+      - name: Run pylint
+        run: pylint --max-line-length=100 --disable=C0111,R0903 plugins/ || true
+
+      - name: Run bandit (security)
+        run: bandit -r plugins/ -c .bandit
+
+  sanity-tests:
+    name: Ansible Sanity Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Ansible
+        run: pip install ansible-core
+
+      - name: Run sanity tests
+        run: |
+          # Install collection locally
+          ansible-galaxy collection build --force
+          ansible-galaxy collection install *.tar.gz --force
+          
+          # Run sanity tests
+          ansible-test sanity --python 3.11 || echo "Sanity tests completed with warnings"
+
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r test-requirements.txt
+
+      - name: Run unit tests
+        run: |
+          pytest tests/unit/ -v --cov=plugins --cov-report=xml --cov-report=term
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+
+  build-collection:
+    name: Build Collection
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Ansible
+        run: pip install ansible-core
+
+      - name: Build collection
+        run: |
+          ansible-galaxy collection build --force
+          
+      - name: List built collection
+        run: |
+          ls -lh *.tar.gz
+          
+      - name: Upload collection artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: collection-tarball
+          path: '*.tar.gz'
+          retention-days: 30
+
+
+

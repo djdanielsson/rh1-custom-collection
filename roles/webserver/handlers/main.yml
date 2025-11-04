@@ -1,0 +1,19 @@
+---
+# handlers file for webserver
+- name: restart webserver
+  ansible.builtin.service:
+    name: "{{ webserver_service }}"
+    state: restarted
+  become: true
+
+- name: reload webserver
+  ansible.builtin.service:
+    name: "{{ webserver_service }}"
+    state: reloaded
+  become: true
+
+- name: check webserver config
+  ansible.builtin.command:
+    cmd: "{{ webserver_config_validate.split()[0] }} -t"
+  become: true
+  changed_when: false

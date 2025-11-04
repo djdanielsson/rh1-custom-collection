@@ -1,0 +1,114 @@
+---
+# tasks file for webserver
+# Installs and configures Apache HTTP Server
+
+- name: Include platform-specific variables
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+  when: ansible_os_family in ['RedHat', 'Debian']
+
+- name: Validate webserver_port is in valid range
+  ansible.builtin.assert:
+    that:
+      - webserver_port | int >= 1
+      - webserver_port | int <= 65535
+    fail_msg: "webserver_port must be between 1 and 65535"
+    quiet: true
+
+- name: Install web server packages
+  ansible.builtin.package:
+    name: "{{ webserver_packages }}"
+    state: present
+  become: true
+  tags:
+    - install
+    - webserver
+    - webserver:install
+
+- name: Create web root directory
+  ansible.builtin.file:
+    path: "{{ webserver_document_root }}"
+    state: directory
+    owner: "{{ webserver_user }}"
+    group: "{{ webserver_group }}"
+    mode: '0755'
+  become: true
+  tags:
+    - configure
+    - webserver
+    - webserver:configure
+
+- name: Deploy index page from template
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: "{{ webserver_document_root }}/index.html"
+    owner: "{{ webserver_user }}"
+    group: "{{ webserver_group }}"
+    mode: '0644'
+  become: true
+  notify: restart webserver
+  tags:
+    - configure
+    - webserver
+    - webserver:configure
+
+- name: Deploy web server configuration from template
+  ansible.builtin.template:
+    src: "{{ webserver_config_template }}"
+    dest: "{{ webserver_config_path }}"
+    owner: root
+    group: root
+    mode: '0644'
+    validate: "{{ webserver_config_validate }}"
+  become: true
+  notify: restart webserver
+  tags:
+    - configure
+    - webserver
+    - webserver:configure
+
+- name: Ensure web server is started and enabled
+  ansible.builtin.service:
+    name: "{{ webserver_service }}"
+    state: started
+    enabled: true
+  become: true
+  tags:
+    - service
+    - webserver
+    - webserver:service
+
+- name: Configure firewall rules for web server
+  ansible.posix.firewalld:
+    service: "{{ firewall_service }}"
+    permanent: true
+    state: enabled
+    immediate: true
+  loop: "{{ webserver_firewall_services }}"
+  loop_control:
+    loop_var: firewall_service
+    label: "{{ firewall_service }}"
+  become: true
+  when:
+    - ansible_os_family == "RedHat"
+    - webserver_configure_firewall | bool
+  tags:
+    - configure
+    - firewall
+    - webserver:firewall
+
+- name: Verify web server is responding
+  ansible.builtin.uri:
+    url: "http://localhost:{{ webserver_port }}"
+    status_code: 200
+    return_content: true
+  register: webserver_response
+  until: webserver_response.status == 200
+  retries: 3
+  delay: 2
+  when: webserver_verify_response | bool
+  check_mode: false
+  changed_when: false
+  tags:
+    - verify
+    - webserver
+    - webserver:verify

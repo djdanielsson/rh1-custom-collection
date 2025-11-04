@@ -1,0 +1,17 @@
+---
+# Platform-specific variables for Debian family
+# Included automatically based on ansible_os_family
+
+# Package names for Ubuntu/Debian
+__webserver_packages:
+  - apache2
+  - apache2-utils
+
+__webserver_service: apache2
+__webserver_user: www-data
+__webserver_group: www-data
+__webserver_config_path: /etc/apache2/apache2.conf
+__webserver_config_validate: /usr/sbin/apache2ctl -t -f %s
+
+
+

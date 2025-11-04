@@ -1,0 +1,40 @@
+# Safety policy for Python dependency scanning
+# Define security and license policies
+
+# Security policies
+security:
+  # Fail on any vulnerability with CVSS score >= 7.0 (High/Critical)
+  continue-on-vulnerability-error: false
+  
+  # Ignore specific vulnerabilities (with justification)
+  ignore-vulnerabilities:
+    # Example: Ignoring a vulnerability in development-only dependency
+    # 12345:
+    #   reason: "Only affects development environment, not production"
+    #   expires: "2025-12-31"
+
+# License policies
+# Reject packages with incompatible licenses
+reject-licenses:
+  - GPL-3.0
+  - AGPL-3.0
+  - LGPL-3.0
+  - SSPL
+
+# Accept packages with these licenses
+accept-licenses:
+  - MIT
+  - Apache-2.0
+  - BSD-3-Clause
+  - BSD-2-Clause
+  - ISC
+  - Python-2.0
+  - PSF
+  - MPL-2.0
+
+# Proxy configuration (if needed behind corporate firewall)
+# proxy:
+#   protocol: https
+#   host: proxy.example.com
+#   port: 8080
+
