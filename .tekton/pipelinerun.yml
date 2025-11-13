@@ -5,6 +5,7 @@ metadata:
   annotations:
     pipelinesascode.tekton.dev/task-1: "[git-clone]"
     pipelinesascode.tekton.dev/task-2: "https://raw.githubusercontent.com/david-igou/tekton-ansible-galaxy/refs/heads/main/task/ansible-galaxy-collection-build/ansible-galaxy-collection-build.yml"
+    pipelinesascode.tekton.dev/task-3: "https://raw.githubusercontent.com/david-igou/tekton-ansible/refs/heads/main/task/ansible-molecule/molecule-task.yml"
     pipelinesascode.tekton.dev/on-event: "[pull_request, push]"
     pipelinesascode.tekton.dev/on-target-branch: "[main]"
     pipelinesascode.tekton.dev/max-keep-runs: "3"
@@ -44,3 +45,17 @@ spec:
         workspaces:
         - name: source
           workspace: shared-workspace
+
+      - name: molecule
+        runAfter:
+        - ansible-galaxy-collection-build
+        taskRef:
+          name: molecule
+        workspaces:
+        - name: source
+          workspace: shared-workspace
+        params:
+        - name: collection-bundle
+          value: $(results.collection-bundle.path)
+        - name: molecule-scenario
+          value: "magic"
