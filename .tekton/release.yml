@@ -12,6 +12,9 @@ metadata:
     pipelinesascode.tekton.dev/max-keep-runs: "3"
 spec:
   workspaces:
+  - name: galaxy-credentials
+    secret:
+      secretName: automationhub-credentials
   - name: shared-workspace
     volumeClaimTemplate:
       spec:
@@ -60,3 +63,17 @@ spec:
           value: $(tasks.ansible-galaxy-collection-build.results.collection-bundle)
         - name: molecule-scenario
           value: "magic"
+
+      - name: ansible-galaxy-collection-publish
+        runAfter:
+        - fetch-source
+        taskRef:
+          name: ansible-galaxy-collection-publish
+        params:
+        - name: COLLECTION_BUNDLE
+          value: $(tasks.ansible-galaxy-collection-build.results.collection-bundle)
+        workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: galaxy-credentials
+          workspace: galaxy-credentials
