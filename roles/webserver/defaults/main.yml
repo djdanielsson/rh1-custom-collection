@@ -36,8 +36,8 @@ webserver_server_name: "{{ ansible_fqdn }}"
 webserver_listen_port: "{{ webserver_port }}"
 
 # Logging
-webserver_error_log: logs/error_log
-webserver_access_log: logs/access_log combined
+webserver_error_log: "logs/error_log"
+webserver_access_log: "logs/access_log common"
 
 # Security
 webserver_server_tokens: Prod

@@ -51,7 +51,7 @@ LogLevel warn
       LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %I %O" combinedio
     </IfModule>
 
-    CustomLog "{{ webserver_access_log }}"
+    CustomLog {{ webserver_access_log }}
 </IfModule>
 
 <IfModule mime_module>
