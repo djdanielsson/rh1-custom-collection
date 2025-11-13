@@ -56,6 +56,6 @@ spec:
           workspace: shared-workspace
         params:
         - name: collection-bundle
-          value: $(results.collection-bundle.path)
+          value: $(tasks.ansible-galaxy-collection-build.results.collection-bundle)
         - name: molecule-scenario
           value: "magic"
