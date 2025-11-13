@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
-  name: ansible-galaxy-collection-build
+  name: ansible-galaxy-collection-release
   annotations:
     pipelinesascode.tekton.dev/task-1: "[git-clone]"
     pipelinesascode.tekton.dev/task-2: "https://raw.githubusercontent.com/david-igou/tekton-ansible-galaxy/refs/heads/main/task/ansible-galaxy-collection-build/ansible-galaxy-collection-build.yml"
