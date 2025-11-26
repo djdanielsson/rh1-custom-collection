@@ -47,5 +47,4 @@
       - "'name cannot be empty' in result_error.msg"
     fail_msg: "Module should handle errors properly"
 
-
-
+...

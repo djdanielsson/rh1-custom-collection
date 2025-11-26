@@ -1,3 +1,4 @@
+---
 # Safety policy for Python dependency scanning
 # Define security and license policies
 
@@ -5,13 +6,13 @@
 security:
   # Fail on any vulnerability with CVSS score >= 7.0 (High/Critical)
   continue-on-vulnerability-error: false
-  
+
   # Ignore specific vulnerabilities (with justification)
   ignore-vulnerabilities:
-    # Example: Ignoring a vulnerability in development-only dependency
-    # 12345:
-    #   reason: "Only affects development environment, not production"
-    #   expires: "2025-12-31"
+# Example: Ignoring a vulnerability in development-only dependency
+# 12345:
+#   reason: "Only affects development environment, not production"
+#   expires: "2025-12-31"
 
 # License policies
 # Reject packages with incompatible licenses
@@ -38,3 +39,4 @@ accept-licenses:
 #   host: proxy.example.com
 #   port: 8080
 
+...

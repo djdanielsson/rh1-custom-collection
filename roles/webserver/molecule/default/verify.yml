@@ -67,5 +67,4 @@
         fail_msg: "Web server is not responding correctly"
         success_msg: "Web server is responding correctly"
 
-
-
+...

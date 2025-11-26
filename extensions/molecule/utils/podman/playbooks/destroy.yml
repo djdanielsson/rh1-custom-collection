@@ -44,3 +44,4 @@
         - item not in ['bridge', 'none', 'host', 'slirp4netns']
         - item is not match('^ns:')
         - item is not match('^container:')
+...

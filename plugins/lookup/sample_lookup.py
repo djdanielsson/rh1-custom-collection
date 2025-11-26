@@ -26,6 +26,7 @@ EXAMPLES = """
 - name: Example usage of sample_lookup
   ansible.builtin.debug:
     msg: "{{ lookup('sample_lookup', 'example_term') }}"
+...
 """
 
 RETURN = """

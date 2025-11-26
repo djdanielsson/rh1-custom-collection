@@ -9,10 +9,10 @@ argument_specs:
       - Manages firewall rules for HTTP/HTTPS
       - Deploys custom index page
       - Ensures service is started and enabled
-    
+
     author:
       - Platform Team
-    
+
     options:
       webserver_packages:
         type: list
@@ -23,61 +23,61 @@ argument_specs:
         description:
           - List of packages to install for web server
           - Should include httpd and any required modules
-      
+
       webserver_service:
         type: str
         required: false
         default: httpd
         description: Name of the web server service
-      
+
       webserver_port:
         type: int
         required: false
         default: 80
         description: Port number for HTTP traffic (1-65535)
-      
+
       webserver_user:
         type: str
         required: false
         default: apache
         description: User to run web server as
-      
+
       webserver_group:
         type: str
         required: false
         default: apache
         description: Group to run web server as
-      
+
       webserver_document_root:
         type: str
         required: false
         default: /var/www/html
         description: Document root directory for web content
-      
+
       webserver_config_template:
         type: str
         required: false
         default: httpd.conf.j2
         description: Template file for web server configuration
-      
+
       webserver_config_path:
         type: str
         required: false
         default: /etc/httpd/conf/httpd.conf
         description: Path to web server configuration file
-      
+
       webserver_config_validate:
         type: str
         required: false
         default: /usr/sbin/httpd -t -f %s
         description: Command to validate configuration file
-      
+
       webserver_configure_firewall:
         type: bool
         required: false
         default: true
         description: Whether to configure firewall rules
-      
+
       webserver_firewall_services:
         type: list
         elements: str
@@ -86,24 +86,24 @@ argument_specs:
           - http
           - https
         description: Firewall services to enable
-      
+
       webserver_verify_response:
         type: bool
         required: false
         default: true
         description: Verify web server responds after starting
-      
+
       webserver_server_admin:
         type: str
         required: false
         default: admin@example.com
         description: Server administrator email
-      
+
       webserver_server_name:
         type: str
         required: false
         description: Server name (FQDN)
-      
+
       webserver_server_tokens:
         type: str
         required: false
@@ -114,7 +114,7 @@ argument_specs:
           - Minor
           - Minimal
         description: Server token verbosity level
-      
+
       webserver_server_signature:
         type: str
         required: false
@@ -123,3 +123,4 @@ argument_specs:
           - "On"
           - "Off"
         description: Whether to include server signature in responses
+...

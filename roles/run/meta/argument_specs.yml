@@ -9,3 +9,4 @@ argument_specs:
         type: str
         description: A simple string argument for demonstration.
         default: "default_value"
+...

@@ -4,10 +4,11 @@
 - name: Converge
   hosts: all
   gather_facts: true # Disable if your role does not rely on facts
-  become_method: su
+  become_method: ansible.builtin.su
   tasks:
     - name: Apply role under test
       ansible.builtin.include_role:
         name: myorg.custom_collection.webserver
       vars:
         webserver_configure_firewall: false
+...

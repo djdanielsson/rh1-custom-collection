@@ -8,3 +8,4 @@
     - name: Apply role under test
       ansible.builtin.include_role:
         name: yournamespace.yourcollection.yourrole
+...

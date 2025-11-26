@@ -30,7 +30,7 @@
     state: directory
     owner: "{{ webserver_user }}"
     group: "{{ webserver_group }}"
-    mode: '0755'
+    mode: "0755"
   become: true
   tags:
     - configure
@@ -43,7 +43,7 @@
     dest: "{{ webserver_document_root }}/index.html"
     owner: "{{ webserver_user }}"
     group: "{{ webserver_group }}"
-    mode: '0644'
+    mode: "0644"
   become: true
   notify: restart webserver
   tags:
@@ -57,7 +57,7 @@
     dest: "{{ webserver_config_path }}"
     owner: root
     group: root
-    mode: '0644'
+    mode: "0644"
     validate: "{{ webserver_config_validate }}"
   become: true
   notify: restart webserver
@@ -112,3 +112,4 @@
     - verify
     - webserver
     - webserver:verify
+...

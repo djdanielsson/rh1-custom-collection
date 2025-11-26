@@ -67,6 +67,7 @@ EXAMPLES = r'''
     name: postgresql
     state: restarted
     verify: false
+...
 '''
 
 RETURN = r'''

@@ -52,7 +52,6 @@ ansible:
         - --diff
         - --force-handlers
 
-
 scenario:
   name: webserver
   test_sequence:
@@ -68,3 +67,4 @@ scenario:
     - verify
     - cleanup
     - destroy
+...

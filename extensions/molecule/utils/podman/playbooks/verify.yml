@@ -8,3 +8,4 @@
     - name: Assert something
       ansible.builtin.assert:
         that: true
+...

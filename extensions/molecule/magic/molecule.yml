@@ -23,8 +23,8 @@ ansible:
         - --diff
         - --force-handlers
 
-
 scenario:
   name: magic
   test_sequence:
     - converge
+...

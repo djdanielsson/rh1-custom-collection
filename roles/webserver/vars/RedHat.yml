@@ -14,5 +14,4 @@ __webserver_group: apache
 __webserver_config_path: /etc/httpd/conf/httpd.conf
 __webserver_config_validate: /usr/sbin/httpd -t -f %s
 
-
-
+...

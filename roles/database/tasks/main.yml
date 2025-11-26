@@ -26,7 +26,7 @@
     dest: "{{ database_config_dir }}/pg_hba.conf"
     owner: postgres
     group: postgres
-    mode: '0600'
+    mode: "0600"
   become: true
   notify: restart database
 
@@ -36,7 +36,7 @@
     dest: "{{ database_config_dir }}/postgresql.conf"
     owner: postgres
     group: postgres
-    mode: '0600'
+    mode: "0600"
   become: true
   notify: restart database
 
@@ -74,3 +74,4 @@
   when:
     - ansible_os_family == "RedHat"
     - database_configure_firewall | bool
+...
