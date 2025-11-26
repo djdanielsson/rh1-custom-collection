@@ -133,12 +133,12 @@ fi
 if [ -f galaxy.yml ]; then
     echo "🔨 Building collection..."
     ansible-galaxy collection build --force --output-path ./ > /dev/null 2>&1 || true
-    
+
     # Extract namespace and name from galaxy.yml
     NAMESPACE=$(yq eval '.namespace' galaxy.yml)
     NAME=$(yq eval '.name' galaxy.yml)
     VERSION=$(yq eval '.version' galaxy.yml)
-    
+
     if [ -f "${NAMESPACE}-${NAME}-${VERSION}.tar.gz" ]; then
         echo "📦 Installing collection locally..."
         ansible-galaxy collection install "${NAMESPACE}-${NAME}-${VERSION}.tar.gz" --force

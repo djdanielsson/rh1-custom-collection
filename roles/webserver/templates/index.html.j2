@@ -40,7 +40,7 @@
 <body>
     <div class="container">
         <h1>Welcome to {{ webserver_server_name }}</h1>
-        
+
         <div class="info">
             <h2>Server Information</h2>
             <ul>
@@ -53,9 +53,9 @@
         </div>
 
         <p>This page was deployed using the <code>myorg.custom_collection.webserver</code> role.</p>
-        
+
         <p>Configured by Ansible Automation Platform - Cloud-Native Ansible Lifecycle</p>
-        
+
         <div class="footer">
             <p>Deployed: {{ ansible_date_time.iso8601 }}</p>
             <p>Managed by: {{ webserver_server_admin }}</p>

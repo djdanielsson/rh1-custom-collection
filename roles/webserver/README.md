@@ -61,7 +61,7 @@ webserver_server_signature: "Off"
 - name: Deploy web server
   hosts: webservers
   become: true
-  
+
   roles:
     - role: myorg.custom_collection.webserver
       webserver_server_name: www.example.com

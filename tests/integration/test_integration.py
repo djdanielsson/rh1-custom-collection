@@ -34,11 +34,11 @@ class TestCollectionIntegration:
         """Test that galaxy.yml is valid."""
         with open("galaxy.yml", "r") as f:
             galaxy = yaml.safe_load(f)
-        
+
         required_fields = ["namespace", "name", "version", "authors", "description"]
         for field in required_fields:
             assert field in galaxy, f"Missing required field: {field}"
-        
+
         # Check version format
         version = galaxy["version"]
         assert isinstance(version, str)
@@ -49,28 +49,28 @@ class TestCollectionIntegration:
         """Test that role has proper structure."""
         role_path = "roles/run"
         required_dirs = ["tasks", "defaults", "meta"]
-        
+
         for dir_name in required_dirs:
             assert os.path.isdir(
                 os.path.join(role_path, dir_name)
             ), f"Missing required directory: {dir_name}"
-        
+
         # Check meta/main.yml exists
         assert os.path.isfile(os.path.join(role_path, "meta", "main.yml"))
 
     def test_module_documentation(self):
         """Test that modules have proper documentation."""
         modules_path = "plugins/modules"
-        
+
         if not os.path.isdir(modules_path):
             pytest.skip("No modules directory")
-        
+
         for filename in os.listdir(modules_path):
             if filename.endswith(".py") and filename != "__init__.py":
                 module_path = os.path.join(modules_path, filename)
                 with open(module_path, "r") as f:
                     content = f.read()
-                
+
                 # Check for required documentation
                 assert "DOCUMENTATION = " in content, f"{filename} missing DOCUMENTATION"
                 assert "EXAMPLES = " in content, f"{filename} missing EXAMPLES"
@@ -91,36 +91,36 @@ class TestRoleIntegration:
     - role: run
       run_message: "test"
 """
-        
+
         with open("/tmp/test_playbook.yml", "w") as f:
             f.write(test_playbook)
-        
+
         result = subprocess.run(
             ["ansible-playbook", "--syntax-check", "/tmp/test_playbook.yml"],
             capture_output=True,
             text=True,
             check=False,
         )
-        
+
         assert result.returncode == 0, f"Syntax check failed: {result.stderr}"
 
     def test_role_defaults(self):
         """Test that role has valid defaults."""
         defaults_path = "roles/run/defaults/main.yml"
-        
+
         if os.path.isfile(defaults_path):
             with open(defaults_path, "r") as f:
                 defaults = yaml.safe_load(f)
-            
+
             assert isinstance(defaults, dict) or defaults is None
 
     def test_role_meta(self):
         """Test that role meta is valid."""
         meta_path = "roles/run/meta/main.yml"
-        
+
         with open(meta_path, "r") as f:
             meta = yaml.safe_load(f)
-        
+
         assert "galaxy_info" in meta
         assert "name" in meta["galaxy_info"]
         assert "author" in meta["galaxy_info"]
@@ -142,7 +142,7 @@ class TestCollectionQuality:
             text=True,
             check=False,
         )
-        
+
         # Allow warnings, but no errors
         # Return code 0 = success, 2 = warnings, other = errors
         assert result.returncode in [0, 2], f"ansible-lint failed: {result.stdout}"
@@ -155,7 +155,7 @@ class TestCollectionQuality:
             text=True,
             check=False,
         )
-        
+
         # Return code 0 = success, 1 = warnings, 2 = errors
         assert result.returncode in [0, 1], f"yamllint failed: {result.stdout}"
 

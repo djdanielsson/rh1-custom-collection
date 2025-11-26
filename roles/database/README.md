@@ -33,7 +33,7 @@ database_password: "{{ lookup('env', 'DB_PASSWORD') }}"
 - name: Deploy database server
   hosts: databases
   become: true
-  
+
   roles:
     - role: myorg.custom_collection.database
       database_name: webapp

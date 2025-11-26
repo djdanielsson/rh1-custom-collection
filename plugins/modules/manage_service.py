@@ -43,8 +43,11 @@ options:
             - Timeout in seconds for service operations
         type: int
         default: 60
-author:
-    - Platform Team
+authors:
+  - David Danielsson
+  - David Igou
+  - Jeff Pullen
+  - Vinny Valdez
 '''
 
 EXAMPLES = r'''
@@ -130,7 +133,7 @@ def manage_service_state(module, name, state, verify, timeout):
     """Manage service state"""
     changed = False
     current_state = 'started' if is_service_running(name) else 'stopped'
-    
+
     if state == 'started' and current_state == 'stopped':
         try:
             subprocess.run(
@@ -139,7 +142,7 @@ def manage_service_state(module, name, state, verify, timeout):
                 timeout=timeout
             )
             changed = True
-            
+
             if verify:
                 # Wait for service to be active
                 start_time = time.time()
@@ -149,19 +152,19 @@ def manage_service_state(module, name, state, verify, timeout):
                     time.sleep(1)
                 else:
                     module.fail_json(msg=f"Service {name} did not start within {timeout} seconds")
-                    
+
         except subprocess.TimeoutExpired:
             module.fail_json(msg=f"Timeout starting service {name}")
         except subprocess.CalledProcessError as e:
             module.fail_json(msg=f"Failed to start service {name}: {e}")
-            
+
     elif state == 'stopped' and current_state == 'started':
         try:
             subprocess.run(['systemctl', 'stop', name], check=True, timeout=timeout)
             changed = True
         except Exception as e:
             module.fail_json(msg=f"Failed to stop service {name}: {e}")
-            
+
     elif state in ['restarted', 'reloaded']:
         action = 'restart' if state == 'restarted' else 'reload'
         try:
@@ -169,7 +172,7 @@ def manage_service_state(module, name, state, verify, timeout):
             changed = True
         except Exception as e:
             module.fail_json(msg=f"Failed to {action} service {name}: {e}")
-    
+
     return changed, 'started' if is_service_running(name) else 'stopped'
 
 
@@ -177,7 +180,7 @@ def manage_service_enabled(module, name, enabled):
     """Manage service enabled state"""
     changed = False
     current_enabled = is_service_enabled(name)
-    
+
     if enabled is not None and enabled != current_enabled:
         action = 'enable' if enabled else 'disable'
         try:
@@ -185,7 +188,7 @@ def manage_service_enabled(module, name, enabled):
             changed = True
         except Exception as e:
             module.fail_json(msg=f"Failed to {action} service {name}: {e}")
-    
+
     return changed
 
 
@@ -220,14 +223,14 @@ def run_module():
 
     # Manage state
     state_changed, final_state = manage_service_state(module, name, state, verify, timeout)
-    
+
     # Manage enabled
     enabled_changed = manage_service_enabled(module, name, enabled)
-    
+
     result['changed'] = state_changed or enabled_changed
     result['name'] = name
     result['state'] = final_state
-    
+
     if enabled is not None:
         result['enabled'] = is_service_enabled(name)
 
