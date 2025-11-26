@@ -44,10 +44,10 @@ options:
         type: int
         default: 60
 author:
-  - David Danielsson
-  - David Igou
-  - Jeff Pullen
-  - Vinny Valdez
+    - David Danielsson (@djdanielsson)
+    - David Igou (@david-igou)
+    - Jeff Pullen (@jeffcpullen)
+    - Vinny Valdez (@vvaldez)
 '''
 
 EXAMPLES = r'''

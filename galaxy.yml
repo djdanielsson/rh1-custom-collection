@@ -8,10 +8,10 @@ name: custom_collection
 version: 1.0.0
 readme: README.md
 authors:
-  - David Danielsson
-  - David Igou
-  - Jeff Pullen
-  - Vinny Valdez
+  - David Danielsson (@djdanielsson)
+  - David Igou (@david-igou)
+  - Jeff Pullen (@jeffcpullen)
+  - Vinny Valdez (@vvaldez)
 
 description: your collection description
 license_file: LICENSE
