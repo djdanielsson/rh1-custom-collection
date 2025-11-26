@@ -8,10 +8,17 @@ from __future__ import absolute_import, annotations, division, print_function
 __metaclass__ = type  # pylint: disable=C0103
 
 from typing import TYPE_CHECKING
-from ansible_collections.ansible.utils.plugins.module_utils.common.argspec_validate import (  # type: ignore
-    AnsibleArgSpecValidator,
-)
-from ansible_collections.ansible.utils.plugins.modules.fact_diff import DOCUMENTATION  # type: ignore
+
+try:
+    from ansible_collections.ansible.utils.plugins.module_utils.common.argspec_validate import (  # type: ignore
+        AnsibleArgSpecValidator,
+    )
+    from ansible_collections.ansible.utils.plugins.modules.fact_diff import DOCUMENTATION  # type: ignore
+    HAS_ANSIBLE_UTILS = True
+except ImportError:
+    HAS_ANSIBLE_UTILS = False
+    DOCUMENTATION = {}
+
 from ansible.plugins.action import ActionBase  # type: ignore
 
 
@@ -26,6 +33,8 @@ class ActionModule(ActionBase):  # type: ignore[misc]
     """
 
     def _check_argspec(self, result: dict[str, Any]) -> None:
+        if not HAS_ANSIBLE_UTILS:
+            return
         aav = AnsibleArgSpecValidator(
             data=self._task.args,
             schema=DOCUMENTATION,

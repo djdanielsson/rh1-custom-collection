@@ -1,4 +1,3 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2025, Platform Team
@@ -53,7 +52,7 @@ def truncate_string(text, length=50, suffix='...'):
         raise TypeError("Input must be a string")
     if len(text) <= length:
         return text
-    return text[:length-len(suffix)] + suffix
+    return text[:length - len(suffix)] + suffix
 
 
 def slugify(text):
@@ -89,6 +88,3 @@ class FilterModule(object):
             'truncate_string': truncate_string,
             'slugify': slugify,
         }
-
-
-

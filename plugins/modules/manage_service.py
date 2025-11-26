@@ -43,7 +43,7 @@ options:
             - Timeout in seconds for service operations
         type: int
         default: 60
-authors:
+author:
   - David Danielsson
   - David Igou
   - Jeff Pullen
@@ -243,6 +243,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
