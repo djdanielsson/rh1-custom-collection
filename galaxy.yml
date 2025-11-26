@@ -20,7 +20,7 @@ license_file: LICENSE
 tags: ["linux", "tools"]
 # TO-DO: maintain this list to reflect the collection's dependencies
 dependencies:
-  "ansible.utils": "*"
+  "ansible.posix": "*"
   "community.postgresql": "*"
   "containers.podman": "*"
 
