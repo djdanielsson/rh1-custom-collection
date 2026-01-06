@@ -16,13 +16,11 @@ authors:
 description: your collection description
 license_file: LICENSE
 
-# TO-DO: update the tags based on your content type
 tags: ["linux", "tools"]
-# TO-DO: maintain this list to reflect the collection's dependencies
 dependencies:
-  "ansible.posix": "*"
-  "community.postgresql": "*"
-  "containers.podman": "*"
+  "ansible.posix": ">=1.5.0"
+  "community.postgresql": ">=3.0.0"
+  "containers.podman": ">=1.10.0"
 
 repository: https://github.com/djdanielsson/rh1-custom-collection
 documentation: https://github.com/djdanielsson/rh1-custom-collection/docs
