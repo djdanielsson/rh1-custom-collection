@@ -314,6 +314,120 @@ controller_projects_dev:
     scm_branch: main
 ```
 
+## Troubleshooting
+
+### Molecule Test Failures
+
+**Symptoms**: `molecule test` fails with various errors
+
+**Diagnosis**:
+```bash
+# Check molecule configuration
+molecule list
+
+# Run with verbose output
+molecule --debug test
+
+# Check molecule logs
+tail -f ~/.cache/molecule/<scenario>/ansible.log
+```
+
+**Common Solutions**:
+- **Missing dependencies**: Install required collections with `ansible-galaxy collection install -r requirements.yml`
+- **Platform issues**: Ensure Docker/Podman is running and accessible
+- **Syntax errors**: Validate YAML with `ansible-lint` or `yamllint`
+- **Resource conflicts**: Clean up previous test instances with `molecule destroy`
+
+### Ansible-lint Errors
+
+**Symptoms**: Linting fails with rule violations
+
+**Diagnosis**:
+```bash
+# Run specific linter rules
+ansible-lint --rules fqcn roles/
+
+# Check ansible-lint version
+ansible-lint --version
+
+# Run with verbose output
+ansible-lint -v roles/
+```
+
+**Common Fixes**:
+- **FQCN violations**: Use fully qualified collection names (e.g., `ansible.builtin.copy`)
+- **Naming issues**: Ensure all tasks have descriptive names
+- **Syntax problems**: Fix YAML indentation and formatting
+- **Import issues**: Add missing `ansible.builtin` imports
+
+### Collection Build Failures
+
+**Symptoms**: `ansible-galaxy collection build` fails
+
+**Diagnosis**:
+```bash
+# Validate galaxy.yml
+ansible-galaxy collection init --dry-run .
+
+# Check for missing files
+ansible-galaxy collection build --dry-run
+
+# Validate manifest
+python -c "import yaml; yaml.safe_load(open('galaxy.yml'))"
+```
+
+**Solutions**:
+- **Invalid galaxy.yml**: Fix syntax errors in collection metadata
+- **Missing files**: Ensure all required directories exist (plugins/, roles/, etc.)
+- **Version conflicts**: Check for duplicate or conflicting versions
+- **Dependency issues**: Verify requirements.yml is valid
+
+### Galaxy Publishing Issues
+
+**Symptoms**: `ansible-galaxy collection publish` fails
+
+**Diagnosis**:
+```bash
+# Check API key
+ansible-galaxy login --help
+
+# Validate collection
+ansible-galaxy collection publish --help
+
+# Test with dry run (if available)
+# ansible-galaxy collection publish --dry-run *.tar.gz
+```
+
+**Solutions**:
+- **Authentication**: Verify Galaxy API key is valid and has publish permissions
+- **Namespace issues**: Ensure collection namespace matches Galaxy account
+- **Version conflicts**: Check if version already exists on Galaxy
+- **Network issues**: Verify connectivity to galaxy.ansible.com
+
+### Execution Environment Issues
+
+**Symptoms**: Collection not available in custom EE
+
+**Diagnosis**:
+```bash
+# Check EE build logs
+podman/docker logs <ee-build-container>
+
+# Validate requirements.yml
+ansible-galaxy collection install -r requirements.yml --dry-run
+
+# Test collection loading
+ansible-galaxy collection list | grep myorg
+```
+
+**Solutions**:
+- **Build failures**: Fix dependencies in execution-environment.yml
+- **Path issues**: Ensure collection is properly included in EE build
+- **Version mismatches**: Align collection and EE versions
+- **Registry issues**: Verify EE image is pushed and accessible
+
+---
+
 ## Contributing
 
 1. Fork the repository
