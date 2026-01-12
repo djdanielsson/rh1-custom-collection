@@ -181,9 +181,7 @@ commands:
       commandLine: pre-commit run --all-files
       group:
         kind: test
-        isDefault: false
-
-# Events - automatic actions
+        isDefault: false# Events - automatic actions
 events:
   postStart:
     - install-tools
