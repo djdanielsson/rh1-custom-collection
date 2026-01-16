@@ -17,7 +17,7 @@ spec:
       secretName: galaxy-credentials
   - name: aap-credentials
     secret:
-      secretName: aap-credentials
+      secretName: aap-admin-password
   - name: shared-workspace
     volumeClaimTemplate:
       spec:
