@@ -124,4 +124,4 @@ spec:
               URL="$AAP_URL/api/galaxy/v3/collections/$NAMESPACE/$NAME/versions/$VERSION/move/staging/published/"
 
               # 3. The Approval Call (You may need to loop this if you get a 404 initially)
-              curl -k -X POST -H "Authorization: Bearer $AAP_TOKEN" -H "Content-Type: application/json" $URL
+              curl -f -k -X POST -H "Authorization: Bearer $AAP_TOKEN" -H "Content-Type: application/json" $URL
