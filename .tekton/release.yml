@@ -15,6 +15,9 @@ spec:
   - name: galaxy-credentials
     secret:
       secretName: galaxy-credentials
+  - name: aap-credentials
+    secret:
+      secretName: aap-credentials
   - name: shared-workspace
     volumeClaimTemplate:
       spec:
@@ -77,3 +80,48 @@ spec:
           workspace: shared-workspace
         - name: galaxy-credentials
           workspace: galaxy-credentials
+
+      - name: approve-collection-release
+        runAfter:
+        - ansible-galaxy-collection-publish
+        workspaces:
+        - name: shared-workspace
+          workspace: shared-workspace
+        - name: aap-credentials
+          workspace: aap-credentials
+        params:
+        - name: url
+          value: "http://aap-dev.aap-dev.svc.cluster.local"
+        - name: namespace
+          value: "myorg"
+        - name: collection-name
+          value: "custom_collection"
+        - name: collection-version
+          value: "{{ git_tag }}"
+        taskSpec:
+          workspaces:
+          - name: shared-workspace
+          - name: aap-credentials
+          steps:
+          - name: approve-collection-release
+            image: registry.redhat.io/openshift4/ose-tools-rhel9 #todo find upstream image
+            script: |
+              #!/usr/bin/env sh
+              set -eux -o
+
+              # 1. Set your variables
+              AAP_URL="$(cat "$(params.url)")"
+              NAMESPACE="$(params.namespace)"
+              NAME="$(params.collection-name)"
+              VERSION="$(params.collection-version)"
+              PASSWORD="$(cat "$(workspaces.aap-credentials.path)/password")"
+
+              # Login and get API Token
+              AAP_TOKEN=$(curl -sk -u admin:$PASSWORD -X POST $AAP_URL/api/gateway/v1/tokens/ | jq -r .token)
+
+              # 2. Construct the URL
+              # Note: Ensure you include the trailing slash if your Hub requires it
+              URL="$AAP_URL/api/galaxy/v3/collections/$NAMESPACE/$NAME/versions/$VERSION/move/staging/published/"
+
+              # 3. The Approval Call (You may need to loop this if you get a 404 initially)
+              curl -k -X POST -H "Authorization: Bearer $AAP_TOKEN" -H "Content-Type: application/json" $URL
