@@ -110,7 +110,7 @@ spec:
               set -eux -o
 
               # 1. Set your variables
-              AAP_URL="$(cat "$(params.url)")"
+              AAP_URL="$(params.url)"
               NAMESPACE="$(params.namespace)"
               NAME="$(params.collection-name)"
               VERSION="$(params.collection-version)"
