@@ -107,7 +107,7 @@ spec:
             image: registry.redhat.io/openshift4/ose-tools-rhel9 #todo find upstream image
             script: |
               #!/usr/bin/env sh
-              set -eux -o
+              set -eu -o
 
               # 1. Set your variables
               AAP_URL="$(params.url)"
