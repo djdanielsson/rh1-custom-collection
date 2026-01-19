@@ -132,9 +132,7 @@ commands:
       commandLine: yamllint .
       group:
         kind: test
-        isDefault: false
-
-  - id: lint-all
+        isDefault: false  - id: lint-all
     exec:
       label: "Run All Linters"
       component: ansible-tools

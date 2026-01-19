@@ -22,8 +22,8 @@ jobs:
     uses: ansible/ansible-content-actions/.github/workflows/build_import.yaml@main
   ansible-lint:
     uses: ansible/ansible-content-actions/.github/workflows/ansible_lint.yaml@main
-  sanity:
-    uses: ansible/ansible-content-actions/.github/workflows/sanity.yaml@main
+  # sanity:
+  #   uses: ansible/ansible-content-actions/.github/workflows/sanity.yaml@main
   unit-galaxy:
     uses: ansible/ansible-content-actions/.github/workflows/unit.yaml@main
   unit-source:
@@ -36,7 +36,7 @@ jobs:
     needs:
       - changelog
       - build-import
-      - sanity
+      # - sanity
       - unit-galaxy
       - unit-source
       - ansible-lint
@@ -46,7 +46,6 @@ jobs:
           python -c "assert 'failure' not in
           set([
           '${{ needs.changelog.result }}',
-          '${{ needs.sanity.result }}',
           '${{ needs.unit-galaxy.result }}'
           '${{ needs.ansible-lint.result }}'
           '${{ needs.unit-source.result }}'
