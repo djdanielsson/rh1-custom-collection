@@ -1,6 +1,4 @@
 ---
-# Argument specifications for webserver role
-# Validates role parameters and provides documentation
 argument_specs:
   main:
     short_description: Configure Apache HTTP Server
@@ -9,118 +7,98 @@ argument_specs:
       - Manages firewall rules for HTTP/HTTPS
       - Deploys custom index page
       - Ensures service is started and enabled
-
     author:
       - Platform Team
-
     options:
-      webserver_packages:
-        type: list
-        elements: str
-        required: false
-        default:
-          - httpd
-        description:
-          - List of packages to install for web server
-          - Should include httpd and any required modules
-
-      webserver_service:
+      firewall_service:
+        description: Variable used in main entry point
         type: str
-        required: false
-        default: httpd
-        description: Name of the web server service
-
-      webserver_port:
-        type: int
-        required: false
-        default: 80
-        description: Port number for HTTP traffic (1-65535)
-
-      webserver_user:
+        required: true
+        version_added: 26.1.16-0
+      webserver_access_log:
+        description: "Log file path or configuration (default: 'logs/access_log common')"
         type: str
-        required: false
-        default: apache
-        description: User to run web server as
-
-      webserver_group:
-        type: str
-        required: false
-        default: apache
-        description: Group to run web server as
-
-      webserver_document_root:
-        type: str
-        required: false
-        default: /var/www/html
-        description: Document root directory for web content
-
-      webserver_config_template:
-        type: str
-        required: false
-        default: httpd.conf.j2
-        description: Template file for web server configuration
-
+        default: logs/access_log common
+        version_added: 26.1.16-0
       webserver_config_path:
-        type: str
-        required: false
-        default: /etc/httpd/conf/httpd.conf
         description: Path to web server configuration file
-
-      webserver_config_validate:
+        type: path
+        default: /etc/httpd/conf/httpd.conf
+      webserver_config_template:
+        description: Template file for web server configuration
         type: str
-        required: false
-        default: /usr/sbin/httpd -t -f %s
+        default: httpd.conf.j2
+      webserver_config_validate:
         description: Command to validate configuration file
-
+        type: str
+        default: /usr/sbin/httpd -t -f %s
       webserver_configure_firewall:
-        type: bool
-        required: false
-        default: true
         description: Whether to configure firewall rules
-
+        type: bool
+        default: true
+      webserver_document_root:
+        description: Document root directory for web content
+        type: str
+        default: /var/www/html
+      webserver_error_log:
+        description: "Log file path or configuration (default: 'logs/error_log')"
+        type: str
+        default: logs/error_log
+        version_added: 26.1.16-0
       webserver_firewall_services:
+        description: Firewall services to enable
         type: list
-        elements: str
-        required: false
         default:
           - http
           - https
-        description: Firewall services to enable
-
-      webserver_verify_response:
-        type: bool
-        required: false
-        default: true
-        description: Verify web server responds after starting
-
+        elements: str
+      webserver_group:
+        description: Group to run web server as
+        type: str
+        default: apache
+      webserver_listen_port:
+        description: "Port number for network connection (default: '{{ webserver_port }}')"
+        type: str
+        default: '{{ webserver_port }}'
+        version_added: 26.1.16-0
+      webserver_packages:
+        description:
+          - List of packages to install for web server
+          - Should include httpd and any required modules
+        type: list
+        default:
+          - httpd
+        elements: str
+      webserver_port:
+        description: Port number for HTTP traffic (1-65535)
+        type: int
+        default: 80
       webserver_server_admin:
-        type: str
-        required: false
-        default: admin@example.com
         description: Server administrator email
-
+        type: str
+        default: admin@example.com
       webserver_server_name:
-        type: str
-        required: false
         description: Server name (FQDN)
-
-      webserver_server_tokens:
         type: str
-        required: false
-        default: Prod
-        choices:
-          - Full
-          - Prod
-          - Minor
-          - Minimal
-        description: Server token verbosity level
-
+        default: '{{ ansible_fqdn }}'
       webserver_server_signature:
-        type: str
-        required: false
-        default: "Off"
-        choices:
-          - "On"
-          - "Off"
         description: Whether to include server signature in responses
+        type: str
+        default: 'Off'
+      webserver_server_tokens:
+        description: Server token verbosity level
+        type: str
+        default: Prod
+      webserver_service:
+        description: Name of the web server service
+        type: str
+        default: httpd
+      webserver_user:
+        description: User to run web server as
+        type: str
+        default: apache
+      webserver_verify_response:
+        description: Verify web server responds after starting
+        type: bool
+        default: true
 ...

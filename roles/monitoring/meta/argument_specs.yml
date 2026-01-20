@@ -1,12 +1,14 @@
 ---
-# argument spec file for myorg.custom_collection.monitoring
-
 argument_specs:
   main:
     short_description: Role description.
+    description:
+      - myorg.custom_collection monitoring Role
+    author:
+      - foo
     options:
       my_variable:
-        type: str
         description: A simple string argument for demonstration.
-        default: "default_value"
+        type: str
+        required: true
 ...
