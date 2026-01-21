@@ -12,7 +12,7 @@
         timeout: 120 # Total time to wait before failing
       delegate_to: localhost
 
-    - name: "Include the db_server role"
+    - name: "Include the database role"
       ansible.builtin.include_role:
         name: "myorg.custom_collection.database"
 ...

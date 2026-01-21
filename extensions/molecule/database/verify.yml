@@ -4,29 +4,29 @@
   gather_facts: false
   connection: community.okd.oc
   vars:
-    db_server_name: "webapp_prod"
-    db_server_user: "webapp_user"
-    db_server_password: "SecurePassword123"
+    database_server_name: "webapp_prod"
+    database_server_user: "webapp_user"
+    database_server_password: "SecurePassword123"
   tasks:
     - name: "FUNCTIONAL TEST: Connect as the new user and create a table"
       community.postgresql.postgresql_query:
-        login_user: "{{ db_server_user }}"
-        login_password: "{{ db_server_password }}"
-        login_db: "{{ db_server_name }}"
+        login_user: "{{ database_server_user }}"
+        login_password: "{{ database_server_password }}"
+        login_db: "{{ database_server_name }}"
         query: "CREATE TABLE IF NOT EXISTS molecule_verify (id INT);"
 
     - name: "FUNCTIONAL TEST: Write data to the new table"
       community.postgresql.postgresql_query:
-        login_user: "{{ db_server_user }}"
-        login_password: "{{ db_server_password }}"
-        login_db: "{{ db_server_name }}"
+        login_user: "{{ database_server_user }}"
+        login_password: "{{ database_server_password }}"
+        login_db: "{{ database_server_name }}"
         query: "INSERT INTO molecule_verify (id) VALUES (1);"
 
     - name: "FUNCTIONAL TEST: Read data back and verify the result"
       community.postgresql.postgresql_query:
-        login_user: "{{ db_server_user }}"
-        login_password: "{{ db_server_password }}"
-        login_db: "{{ db_server_name }}"
+        login_user: "{{ database_server_user }}"
+        login_password: "{{ database_server_password }}"
+        login_db: "{{ database_server_name }}"
         query: "SELECT COUNT(*) FROM molecule_verify;"
       register: query_result
       changed_when: false
