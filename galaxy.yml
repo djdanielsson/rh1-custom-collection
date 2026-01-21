@@ -5,7 +5,7 @@
 
 namespace: myorg
 name: custom_collection
-version: 26.1.16-0
+version: 26.1.21-0
 readme: README.md
 authors:
   - David Danielsson (@djdanielsson)
