@@ -2,29 +2,29 @@
 # tasks file for myorg.custom_collection.database
 - name: Create the application database
   community.postgresql.postgresql_db:
-    name: "{{ db_server_name }}"
+    name: "{{ database_server_name }}"
     state: present
 
 - name: Create the application database user
   community.postgresql.postgresql_user:
-    login_db: "{{ db_server_name }}"
-    name: "{{ db_server_user }}"
-    password: "{{ db_server_password }}"
+    login_db: "{{ database_server_name }}"
+    name: "{{ database_server_user }}"
+    password: "{{ database_server_password }}"
     state: present
 
 - name: Grant CONNECT on database to our user
   community.postgresql.postgresql_privs:
-    login_db: "{{ db_server_name }}"
+    login_db: "{{ database_server_name }}"
     privs: CONNECT
     type: database
-    obj: "{{ db_server_name }}"
-    roles: "{{ db_server_user }}"
+    obj: "{{ database_server_name }}"
+    roles: "{{ database_server_user }}"
 
 - name: Grant USAGE and CREATE on schema public to our user
   community.postgresql.postgresql_privs:
-    login_db: "{{ db_server_name }}"
+    login_db: "{{ database_server_name }}"
     privs: ALL
     type: schema
     obj: public
-    roles: "{{ db_server_user }}"
+    roles: "{{ database_server_user }}"
 ...

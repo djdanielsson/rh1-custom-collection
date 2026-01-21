@@ -6,17 +6,17 @@ argument_specs:
     description: "This role manages PostgreSQL database users and databases within an existing PostgreSQL instance."
     author: "David Danielsson"
     options:
-      db_server_name:
+      database_server_name:
         type: "str"
         description: "The name of the database to create"
         default: "webapp_prod"
 
-      db_server_user:
+      database_server_user:
         type: "str"
         description: "The name of the database user to create"
         default: "webapp_user"
 
-      db_server_password:
+      database_server_password:
         type: "str"
         description: "The password for the database user"
         default: "SecurePassword123"
