@@ -1,77 +1,30 @@
 ---
-# tasks file for database
-- name: Install PostgreSQL packages
-  ansible.builtin.package:
-    name: "{{ database_packages }}"
-    state: present
-  become: true
-
-- name: Initialize PostgreSQL database (if needed)
-  ansible.builtin.command:
-    cmd: postgresql-setup --initdb
-    creates: "{{ database_data_dir }}/PG_VERSION"
-  become: true
-  when: ansible_os_family == "RedHat"
-
-- name: Ensure PostgreSQL is started and enabled
-  ansible.builtin.service:
-    name: "{{ database_service }}"
-    state: started
-    enabled: true
-  become: true
-
-- name: Configure PostgreSQL authentication
-  ansible.builtin.template:
-    src: pg_hba.conf.j2
-    dest: "{{ database_config_dir }}/pg_hba.conf"
-    owner: postgres
-    group: postgres
-    mode: "0600"
-  become: true
-  notify: restart database
-
-- name: Configure PostgreSQL settings
-  ansible.builtin.template:
-    src: postgresql.conf.j2
-    dest: "{{ database_config_dir }}/postgresql.conf"
-    owner: postgres
-    group: postgres
-    mode: "0600"
-  become: true
-  notify: restart database
-
-- name: Create database
+# tasks file for myorg.custom_collection.database
+- name: Create the application database
   community.postgresql.postgresql_db:
-    name: "{{ database_name }}"
-    encoding: UTF-8
-    lc_collate: en_US.UTF-8
-    lc_ctype: en_US.UTF-8
-    template: template0
-  become: true
-  become_user: postgres
-  when: database_name is defined
+    name: "{{ db_server_name }}"
+    state: present
 
-- name: Create database user
+- name: Create the application database user
   community.postgresql.postgresql_user:
-    name: "{{ database_user }}"
-    password: "{{ database_password }}"
-    db: "{{ database_name }}"
-    priv: ALL
-  become: true
-  become_user: postgres
-  when:
-    - database_user is defined
-    - database_password is defined
-    - database_name is defined
+    login_db: "{{ db_server_name }}"
+    name: "{{ db_server_user }}"
+    password: "{{ db_server_password }}"
+    state: present
 
-- name: Configure firewall for PostgreSQL
-  ansible.posix.firewalld:
-    service: postgresql
-    permanent: true
-    state: enabled
-    immediate: true
-  become: true
-  when:
-    - ansible_os_family == "RedHat"
-    - database_configure_firewall | bool
+- name: Grant CONNECT on database to our user
+  community.postgresql.postgresql_privs:
+    login_db: "{{ db_server_name }}"
+    privs: CONNECT
+    type: database
+    obj: "{{ db_server_name }}"
+    roles: "{{ db_server_user }}"
+
+- name: Grant USAGE and CREATE on schema public to our user
+  community.postgresql.postgresql_privs:
+    login_db: "{{ db_server_name }}"
+    privs: ALL
+    type: schema
+    obj: public
+    roles: "{{ db_server_user }}"
 ...

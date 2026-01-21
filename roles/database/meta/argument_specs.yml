@@ -1,75 +1,24 @@
 ---
+# argument spec file for myorg.custom_collection.database
 argument_specs:
   main:
-    short_description: Role description.
-    description:
-      - myorg.custom_collection database Role
-    author:
-      - foo
+    short_description: "Arguments for the database role"
+    description: "This role manages PostgreSQL database users and databases within an existing PostgreSQL instance."
+    author: "David Danielsson"
     options:
-      database_config_dir:
-        description: "Directory path (default: '/var/lib/pgsql/data')"
-        type: path
-        default: /var/lib/pgsql/data
-        version_added: 26.1.16-0
-      database_configure_firewall:
-        description: Base directory path (disabled by default)
-        type: bool
-        default: false
-        version_added: 26.1.16-0
-      database_data_dir:
-        description: "Directory path (default: '/var/lib/pgsql/data')"
-        type: path
-        default: /var/lib/pgsql/data
-        version_added: 26.1.16-0
-      database_listen_addresses:
-        description: "Network address (default: 'localhost')"
-        type: str
-        default: localhost
-        version_added: 26.1.16-0
-      database_max_connections:
-        description: "Base directory path (default: 100)"
-        type: int
-        default: 100
-        version_added: 26.1.16-0
-      database_name:
-        description: Variable used in main entry point
-        type: str
-        required: true
-        version_added: 26.1.16-0
-      database_packages:
-        description: Base directory path (list with 4 default items)
-        type: list
-        default:
-          - postgresql
-          - postgresql-server
-          - postgresql-contrib
-          - python3-psycopg2
-        elements: str
-        version_added: 26.1.16-0
-      database_password:
-        description: Variable used in main entry point
-        type: str
-        required: true
-        version_added: 26.1.16-0
-      database_port:
-        description: "Port number for network connection (default: 5432)"
-        type: int
-        default: 5432
-        version_added: 26.1.16-0
-      database_service:
-        description: "Base directory path (default: 'postgresql')"
-        type: str
-        default: postgresql
-        version_added: 26.1.16-0
-      database_shared_buffers:
-        description: "Base directory path (default: '128MB')"
-        type: str
-        default: 128MB
-        version_added: 26.1.16-0
-      database_user:
-        description: Variable used in main entry point
-        type: str
-        required: true
-        version_added: 26.1.16-0
+      db_server_name:
+        type: "str"
+        description: "The name of the database to create"
+        default: "webapp_prod"
+
+      db_server_user:
+        type: "str"
+        description: "The name of the database user to create"
+        default: "webapp_user"
+
+      db_server_password:
+        type: "str"
+        description: "The password for the database user"
+        default: "SecurePassword123"
+        no_log: true
 ...

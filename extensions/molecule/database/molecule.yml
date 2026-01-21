@@ -2,7 +2,7 @@
 dependency:
   name: galaxy
   options:
-    requirements-file: ../utils/ocp/playbooks/collections/requirements.yml
+    requirements-file: collections/requirements.yml
 driver:
   name: default
   options:
@@ -18,11 +18,11 @@ provisioner:
   # Failing to write the ansible into /.ansible/tmp
   playbooks:
     cleanup: ../utils/ocp/playbooks/cleanup.yml
-    converge: ../utils/ocp/playbooks/converge.yml
+    converge: converge.yml
     create: ../utils/ocp/playbooks/create.yml
     destroy: ../utils/ocp/playbooks/destroy.yml
     prepare: ../utils/ocp/playbooks/prepare.yml
-    verify: ../utils/ocp/playbooks/verify.yml
+    verify: verify.yml
   config_options:
     defaults:
       remote_tmp: '/tmp'
