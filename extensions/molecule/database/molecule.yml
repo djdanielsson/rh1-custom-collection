@@ -2,7 +2,7 @@
 dependency:
   name: galaxy
   options:
-    requirements-file: /extensions/molecule/provisioners/${PROVISIONER:-podman}/requirements.yml
+    requirements-file: extensions/molecule/provisioners/${PROVISIONER:-podman}/requirements.yml
 driver:
   name: default
   options:
