@@ -2,17 +2,38 @@
 - name: Converge
   hosts: all
   gather_facts: true
-  connection: community.okd.oc
+  connection: kubernetes.core.kubectl
+  # vars:
+  #   ansible_kubectl_namespace: "asdf"
   tasks:
-    - name: "Wait for PostgreSQL to be ready"
-      ansible.builtin.wait_for:
-        host: "{{ ansible_host }}"
-        port: 5432
-        delay: 10  # Time to wait before first check
-        timeout: 120 # Total time to wait before failing
-      delegate_to: localhost
 
-    - name: "Include the database role"
-      ansible.builtin.include_role:
-        name: "myorg.custom_collection.database"
+    - name: Print hostname via shell
+      ansible.builtin.command:
+        cmd: cat /etc/redhat-release
+      register: redhat_release
+
+    - name: Print hostname via shell
+      ansible.builtin.command:
+        cmd: cat /etc/hostname
+      register: hostname
+
+    - name: print results
+      ansible.builtin.debug:
+        var: redhat_release
+
+    - name: print results
+      ansible.builtin.debug:
+        var: hostname
+
+    # - name: "Wait for PostgreSQL to be ready"
+    #   ansible.builtin.wait_for:
+    #     host: "{{ ansible_host }}"
+    #     port: 5432
+    #     delay: 10  # Time to wait before first check
+    #     timeout: 120 # Total time to wait before failing
+    #   delegate_to: localhost
+
+    # - name: "Include the database role"
+    #   ansible.builtin.include_role:
+    #     name: "myorg.custom_collection.database"
 ...

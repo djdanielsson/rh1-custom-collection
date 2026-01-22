@@ -2,7 +2,7 @@
 - name: Verify
   hosts: all
   gather_facts: false
-  connection: community.okd.oc
+  connection: kubernetes.core.kubectl
   vars:
     database_server_name: "webapp_prod"
     database_server_user: "webapp_user"

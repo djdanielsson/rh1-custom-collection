@@ -3,12 +3,11 @@
   hosts: localhost
   connection: local
   gather_facts: false
-  no_log: "{{ molecule_no_log }}"
+  no_log: "{{ molecule_no_log | default(true) }}"
   tasks:
 
-    - name: Create molecule instance as containers
-      community.okd.k8s:
-        kubeconfig: "{{ lookup('ansible.builtin.env', 'HOME') }}/.kube/config"
+    - name: Create instance as a kubernetes pod
+      kubernetes.core.k8s:
         state: present
         definition: "{{ lookup('template', 'templates/deployment.yml') | from_yaml }}"
         wait: true

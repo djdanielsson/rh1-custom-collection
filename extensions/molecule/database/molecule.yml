@@ -12,16 +12,20 @@ driver:
 platforms:
   - name: molecule-ubi8-python-1
     image: registry.access.redhat.com/ubi8/python-39@sha256:301fec66443f80c3cc507ccaf72319052db5a1dc56deb55c8f169011d4bbaacb
+    namespace: ${MOLECULE_NAMESPACE:-ci-rh1-custom-collection}
+    workingDir: '/tmp'
+  - name: molecule-ubi8-python-2
+    image: registry.access.redhat.com/ubi8/python-39@sha256:301fec66443f80c3cc507ccaf72319052db5a1dc56deb55c8f169011d4bbaacb
+    namespace: ${MOLECULE_NAMESPACE:-ci-rh1-custom-collection}
     workingDir: '/tmp'
 provisioner:
   name: ansible
   # Failing to write the ansible into /.ansible/tmp
   playbooks:
-    cleanup: ../utils/ocp/playbooks/cleanup.yml
     converge: converge.yml
-    create: ../utils/ocp/playbooks/create.yml
-    destroy: ../utils/ocp/playbooks/destroy.yml
-    prepare: ../utils/ocp/playbooks/prepare.yml
+    create: ../utils/kubernetes-pod/playbooks/create.yml
+    destroy: ../utils/kubernetes-pod/playbooks/destroy.yml
+    prepare: ../utils/kubernetes-pod/playbooks/prepare.yml
     verify: verify.yml
   config_options:
     defaults:
@@ -41,7 +45,7 @@ provisioner:
 verifier:
   name: ansible
 scenario:
-  name: default
+  name: database
   test_sequence:
     - dependency
     - syntax
