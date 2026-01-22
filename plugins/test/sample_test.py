@@ -33,6 +33,7 @@ EXAMPLES = """
 - name: Display a bool
   ansible.builtin.debug:
     msg: "{{ 50 | sample_test }}"
+...
 """
 
 

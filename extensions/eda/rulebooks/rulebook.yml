@@ -10,3 +10,4 @@
       action:
         run_playbook:
           name: ansible.eda.hello
+...

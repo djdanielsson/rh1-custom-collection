@@ -7,21 +7,23 @@
   #   ansible_kubectl_namespace: "asdf"
   tasks:
 
-    - name: Print hostname via shell
+    - name: Print release via shell
       ansible.builtin.command:
         cmd: cat /etc/redhat-release
+      changed_when: false
       register: redhat_release
 
     - name: Print hostname via shell
       ansible.builtin.command:
         cmd: cat /etc/hostname
+      changed_when: false
       register: hostname
 
-    - name: print results
+    - name: Print release results
       ansible.builtin.debug:
         var: redhat_release
 
-    - name: print results
+    - name: Print hostname results
       ansible.builtin.debug:
         var: hostname
 
