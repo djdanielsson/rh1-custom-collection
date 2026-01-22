@@ -6,6 +6,17 @@
   no_log: "{{ molecule_no_log | default(true) }}"
   tasks:
 
+    - name: Install python dependencies
+      ansible.builtin.pip:
+        name: kubernetes
+        state: present
+      register: pip_result
+
+    - name: Debug python dependencies
+      ansible.builtin.debug:
+        var: pip_result
+      when: pip_result.changed | default(false) | bool
+
     - name: Create instance as a kubernetes pod
       kubernetes.core.k8s:
         state: present

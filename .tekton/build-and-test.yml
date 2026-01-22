@@ -4,8 +4,8 @@ metadata:
   name: ansible-galaxy-collection-build
   annotations:
     pipelinesascode.tekton.dev/task-1: "[git-clone]"
-    pipelinesascode.tekton.dev/task-2: "https://raw.githubusercontent.com/david-igou/tekton-ansible/refs/heads/main/task/ansible-galaxy-collection-build/ansible-galaxy-collection-build.yml"
-    pipelinesascode.tekton.dev/task-3: "https://raw.githubusercontent.com/david-igou/tekton-ansible/refs/heads/main/task/ansible-molecule/molecule-task.yml"
+    pipelinesascode.tekton.dev/task-2: "https://raw.githubusercontent.com/djdanielsson/rh1-cluster-config/refs/heads/main/tekton-tasks/ansible-galaxy-collection-build-task.yml"
+    pipelinesascode.tekton.dev/task-3: "https://raw.githubusercontent.com/djdanielsson/rh1-cluster-config/refs/heads/main/tekton-tasks/molecule-task.yml"
     pipelinesascode.tekton.dev/on-event: "[pull_request, push]"
     pipelinesascode.tekton.dev/on-target-branch: "[main]"
     pipelinesascode.tekton.dev/max-keep-runs: "3"
@@ -59,3 +59,5 @@ spec:
           value: $(tasks.ansible-galaxy-collection-build.results.collection-bundle)
         - name: molecule-scenario
           value: "database"
+        - name: provisioner-environment-variable
+          value: "kubernetes"

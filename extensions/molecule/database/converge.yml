@@ -2,9 +2,6 @@
 - name: Converge
   hosts: all
   gather_facts: true
-  connection: kubernetes.core.kubectl
-  # vars:
-  #   ansible_kubectl_namespace: "asdf"
   tasks:
 
     - name: Print hostname via shell
