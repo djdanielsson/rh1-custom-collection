@@ -1,2 +1,1 @@
-# No external python dependencies required
-# This collection relies on standard library and ansible-core
+# TO-DO: add python packages that are required for this collection

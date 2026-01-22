@@ -7,4 +7,3 @@
   ansible.builtin.assert:
     that:
       - msg == 'Hello, ansible-creator'
-...

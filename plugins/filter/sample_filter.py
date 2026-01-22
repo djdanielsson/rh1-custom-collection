@@ -33,7 +33,6 @@ EXAMPLES = """
 - name: Display a hello message
   ansible.builtin.debug:
     msg: "{{ 'ansible-creator' | sample_filter }}"
-...
 """
 
 

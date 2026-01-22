@@ -32,5 +32,4 @@ EXAMPLES = """
       with_prefix:
         prefix: "Hello, World"
         msg: "Ansible!"
-...
 """

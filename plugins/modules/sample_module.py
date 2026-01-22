@@ -31,7 +31,6 @@ EXAMPLES = """
 - name: Display the message
   ansible.builtin.debug:
     msg: result.message
-...
 """
 
 RETURN = """

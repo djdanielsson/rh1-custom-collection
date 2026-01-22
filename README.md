@@ -20,7 +20,6 @@ This repository contains a custom Ansible collection demonstrating best practice
 | `webserver` | Deploy and configure web servers | ✅ Yes |
 | `database` | Deploy and configure databases | ✅ Yes |
 | `monitoring` | Deploy monitoring agents | ✅ Yes |
-| `run` | Generic task execution role | ✅ Yes |
 
 ### Modules (2)
 
@@ -69,10 +68,8 @@ automation-collection-example/
 │   │   ├── tasks/main.yml
 │   │   ├── handlers/main.yml
 │   │   ├── templates/
-│   │   └── molecule/             # Molecule test scenarios
 │   ├── database/
 │   ├── monitoring/
-│   └── run/
 │
 ├── plugins/                      # Custom plugins
 │   ├── modules/
@@ -125,7 +122,7 @@ collections:
   - name: myorg.custom_collection
     source: https://github.com/djdanielsson/rh1-custom-collection.git
     type: git
-    version: main  # or specific tag like 25.01.05.0
+    version: main  # or specific tag like 26.1.5-0
 ```
 
 ## Usage
@@ -270,12 +267,12 @@ ansible-galaxy collection build
 
 ## Versioning
 
-This collection follows **CalVer: YY.MM.DD.PATCH**
+This collection follows **CalVer: YY.M.D-PATCH**
 
 ```
-25.01.05.0 - January 5, 2025, initial release
-25.01.05.1 - January 5, 2025, hotfix
-25.01.06.0 - January 6, 2025, new release
+26.1.5-0 - January 5, 2025, initial release
+26.1.5-1 - January 5, 2025, hotfix
+26.1.6-0 - January 6, 2025, new release
 ```
 
 Update version in `galaxy.yml`:
@@ -283,7 +280,7 @@ Update version in `galaxy.yml`:
 ```yaml
 namespace: myorg
 name: custom_collection
-version: "25.01.05.0"
+version: "26.1.5-0"
 ```
 
 ## CI/CD
@@ -459,10 +456,3 @@ ansible-galaxy collection list | grep myorg
 - [Molecule Documentation](https://molecule.readthedocs.io/)
 - [ansible-creator](https://ansible.readthedocs.io/projects/creator/)
 - [Red Hat CoP Best Practices](https://redhat-cop.github.io/automation-good-practices/)
-
----
-
-**Last Updated**: 2025-01-05  
-**Namespace**: myorg  
-**Collection Name**: custom_collection  
-**License**: GPL-3.0-or-later
