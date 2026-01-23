@@ -1,5 +1,6 @@
 ---
-- name: Create
+# Unused
+- name: Prepare
   hosts: localhost
   connection: local
   gather_facts: false

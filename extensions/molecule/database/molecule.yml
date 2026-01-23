@@ -40,8 +40,6 @@ provisioner:
     converge: converge.yml
     create: ../provisioners/${PROVISIONER:-podman}/create.yml
     destroy: ../provisioners/${PROVISIONER:-podman}/destroy.yml
-    # prepare: ../provisioners/${PROVISIONER:-podman}/prepare.yml
-    # prepare: ../utils/kubernetes-pod/playbooks/prepare.yml
     verify: verify.yml
   inventory:
     links:
