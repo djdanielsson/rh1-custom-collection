@@ -44,10 +44,6 @@
       loop_control:
         loop_var: db_host
 
-    - name: debug all rowcounts
-      ansible.builtin.debug:
-        msg: "{{ query_result.results | map(attribute='rowcount') | list }}"
-
     - name: "Assert that every result has rowcount == 1"
       ansible.builtin.assert:
         that:
