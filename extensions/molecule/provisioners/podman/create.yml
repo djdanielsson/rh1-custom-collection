@@ -12,14 +12,14 @@
         __podman_networks: []
 
     # Iterate over each platform defined in molecule_yml.platforms
-    # If the platform has a 'network' key, append its value(s) to the __podman_networks list.
+    # If the platform has a 'podman_network' key, append its value(s) to the __podman_networks list.
     # Handles both single network (string) and multiple networks (list).
-    - name: Collect networks from platforms[].network
+    - name: Collect networks from platforms[].podman_network
       ansible.builtin.set_fact:
-        __podman_networks: "{{ __podman_networks + (item['network'] if (item['network'] is sequence and item['network'] is not string) else [item['network']]) }}"
+        __podman_networks: "{{ __podman_networks + (item['podman_network'] if (item['podman_network'] is sequence and item['podman_network'] is not string) else [item['podman_network']]) }}"
       with_items: "{{ molecule_yml['platforms'] }}"
       when:
-        - item['network'] is defined
+        - item['podman_network'] is defined
 
     # Create all unique podman networks collected above, except for special built-in or reserved networks.
     # Skips creation for default networks like 'bridge', 'none', 'host', 'slirp4netns', and for namespace/container references.
@@ -40,7 +40,7 @@
         image: "{{ item['image'] }}"
         state: started
         recreate: false
-        command: "{{ item['command'] | default('sleep 1d') }}"
+        command: "{{ item['command'] | default(omit) }}"
         privileged: "{{ item['privileged'] | default(false) }}"
         log_driver: "{{ hostvars[item]['container_log_driver'] | default('json-file') }}"
         volume: "{{ item['volumes'] | default(omit) }}"
@@ -48,7 +48,7 @@
         expose: "{{ item['exposed_ports'] | default(omit) }}"
         publish: "{{ item['published_ports'] | default(omit) }}"
         ulimit: "{{ item['ulimits'] | default(omit) }}"
-        network: "{{ item['network'] | default(omit) }}"
+        network: "{{ item['podman_network'] | default(omit) }}"
         dns: "{{ item['dns_servers'] | default(omit) }}"
         env: "{{ item['env'] | default({}) }}"
         tmpfs: "{{ item['tmpfs'] | default(omit) }}"

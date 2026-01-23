@@ -3,28 +3,36 @@
 - name: Create the application database
   community.postgresql.postgresql_db:
     name: "{{ database_server_name }}"
+    host: "{{ database_host | default(omit) }}"
+    login_password: "{{ database_server_password }}"
     state: present
 
 - name: Create the application database user
   community.postgresql.postgresql_user:
     login_db: "{{ database_server_name }}"
     name: "{{ database_server_user }}"
-    password: "{{ database_server_password }}"
+    login_password: "{{ database_server_password }}"
+    password: "{{ database_server_user_password }}"
+    host: "{{ database_host | default(omit) }}"
     state: present
 
 - name: Grant CONNECT on database to our user
   community.postgresql.postgresql_privs:
     login_db: "{{ database_server_name }}"
+    login_password: "{{ database_server_password }}"
     privs: CONNECT
     type: database
     obj: "{{ database_server_name }}"
     roles: "{{ database_server_user }}"
+    host: "{{ database_host | default(omit) }}"
 
 - name: Grant USAGE and CREATE on schema public to our user
   community.postgresql.postgresql_privs:
     login_db: "{{ database_server_name }}"
+    login_password: "{{ database_server_password }}"
     privs: ALL
     type: schema
     obj: public
     roles: "{{ database_server_user }}"
+    host: "{{ database_host | default(omit) }}"
 ...

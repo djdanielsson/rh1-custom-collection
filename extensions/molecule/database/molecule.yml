@@ -3,6 +3,7 @@ dependency:
   name: galaxy
   options:
     requirements-file: extensions/molecule/provisioners/${PROVISIONER:-podman}/requirements.yml
+    force: true
 driver:
   name: default
   options:
@@ -10,14 +11,29 @@ driver:
     ansible_connection_options:
       connection: local
 platforms:
-  - name: molecule-ubi8-python-1
-    image: registry.access.redhat.com/ubi8/python-39@sha256:301fec66443f80c3cc507ccaf72319052db5a1dc56deb55c8f169011d4bbaacb
+  - name: postgres16
+    groups:
+      - database
+    image: docker.io/postgres:16-trixie
+    env:
+      POSTGRES_PASSWORD: SecurePassword123
+    podman_network: ci-rh1-custom-collection
     namespace: ${MOLECULE_NAMESPACE:-ci-rh1-custom-collection}
-    workingDir: '/tmp'
-  - name: molecule-ubi8-python-2
-    image: registry.access.redhat.com/ubi8/python-39@sha256:301fec66443f80c3cc507ccaf72319052db5a1dc56deb55c8f169011d4bbaacb
+  - name: postgres18
+    groups:
+      - database
+    image: docker.io/postgres:18-trixie
+    env:
+      POSTGRES_PASSWORD: SecurePassword123
+    podman_network: ci-rh1-custom-collection
     namespace: ${MOLECULE_NAMESPACE:-ci-rh1-custom-collection}
-    workingDir: '/tmp'
+  - name: runner
+    groups:
+      - runner
+    namespace: ${MOLECULE_NAMESPACE:-ci-rh1-custom-collection}
+    image: ghcr.io/ansible/community-ansible-dev-tools:v25.9.0
+    command: sleep 1d
+    podman_network: ci-rh1-custom-collection
 provisioner:
   name: ansible
   playbooks:

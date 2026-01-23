@@ -1,36 +1,34 @@
 ---
 - name: Converge
-  hosts: all
-  gather_facts: true
+  hosts: runner
+  gather_facts: false
   tasks:
 
-    - name: Print hostname via shell
-      ansible.builtin.command:
-        cmd: cat /etc/redhat-release
-      register: redhat_release
+    - name: Install pip dependencies
+      ansible.builtin.pip:
+        name: "psycopg2-binary"
+        state: present
 
-    - name: Print hostname via shell
-      ansible.builtin.command:
-        cmd: cat /etc/hostname
-      register: hostname
+    - name: "Wait for PostgreSQL to be ready"
+      ansible.builtin.wait_for:
+        host: "{{ db_host }}"
+        port: 5432
+        delay: 1  # Time to wait before first check
+        timeout: 120 # Total time to wait before failing
+      loop: "{{ groups['database'] }}"
+      loop_control:
+        loop_var: db_host
 
-    - name: print results
-      ansible.builtin.debug:
-        var: redhat_release
-
-    - name: print results
-      ansible.builtin.debug:
-        var: hostname
-
-    # - name: "Wait for PostgreSQL to be ready"
-    #   ansible.builtin.wait_for:
-    #     host: "{{ ansible_host }}"
-    #     port: 5432
-    #     delay: 10  # Time to wait before first check
-    #     timeout: 120 # Total time to wait before failing
-    #   delegate_to: localhost
-
-    # - name: "Include the database role"
-    #   ansible.builtin.include_role:
-    #     name: "myorg.custom_collection.database"
+    - name: "Include the database role for each database host"
+      ansible.builtin.include_role:
+        name: "myorg.custom_collection.database"
+      loop: "{{ groups['database'] }}"
+      loop_control:
+        loop_var: db_host
+      vars:
+        database_host: "{{ hostvars[db_host]['inventory_hostname'] }}"
+        database_server_name: "webapp_prod"
+        database_server_user: "webapp_user"
+        database_server_password: "SecurePassword123"
+        database_server_user_password: "SecurePassword123"
 ...

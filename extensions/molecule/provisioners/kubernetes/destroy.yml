@@ -10,9 +10,17 @@
     - name: Destroy molecule containers
       kubernetes.core.k8s:
         state: absent
-        definition: "{{ lookup('template', 'templates/deployment.yml') | from_yaml }}"
+        definition: "{{ lookup('template', 'templates/pod.yml.j2') | from_yaml }}"
         wait: true
       register: server
+      with_items: "{{ molecule_yml.platforms }}"
+
+    - name: Destroy molecule services
+      kubernetes.core.k8s:
+        state: absent
+        definition: "{{ lookup('template', 'templates/service.yml.j2') | from_yaml }}"
+        wait: true
+      register: service
       with_items: "{{ molecule_yml.platforms }}"
 
     # Mandatory configuration for Molecule to function.

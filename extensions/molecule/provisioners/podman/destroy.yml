@@ -29,10 +29,10 @@
 
     - name: Collect networks from platforms[].network
       ansible.builtin.set_fact:
-        __podman_networks: "{{ __podman_networks + (item['network'] if (item['network'] is sequence and item['network'] is not string) else [item['network']]) }}"
+        __podman_networks: "{{ __podman_networks + (item['podman_network'] if (item['podman_network'] is sequence and item['podman_network'] is not string) else [item['podman_network']]) }}"
       with_items: "{{ molecule_yml['platforms'] }}"
       when:
-        - item['network'] is defined
+        - item['podman_network'] is defined
 
     - name: Delete podman network(s)
       containers.podman.podman_network:

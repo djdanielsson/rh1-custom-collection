@@ -20,14 +20,26 @@
     - name: Create instance as a kubernetes pod
       kubernetes.core.k8s:
         state: present
-        definition: "{{ lookup('template', 'templates/deployment.yml') | from_yaml }}"
+        definition: "{{ lookup('template', 'templates/pod.yml.j2') | from_yaml }}"
         wait: true
       register: server
       with_items: "{{ molecule_yml.platforms }}"
 
-    - name: Debug molecule creations
+    - name: Debug molecule pod creations
       ansible.builtin.debug:
         var: server
+
+    - name: Create service objects for each pod
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('template', 'templates/service.yml.j2') | from_yaml }}"
+        wait: true
+      register: service
+      with_items: "{{ molecule_yml.platforms }}"
+
+    - name: Debug molecule servicecreations
+      ansible.builtin.debug:
+        var: service
 
     - name: Store container information  # noqa: no-handler
       when: server.changed | default(false) | bool
