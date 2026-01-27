@@ -1,6 +1,0 @@
----
-# defaults file for myorg.custom_collection.database
-database_server_name: "webapp_prod"
-database_server_user: "webapp_user"
-database_server_password: "SecurePassword123"
-...

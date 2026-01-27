@@ -1,6 +1,6 @@
 ---
 galaxy_info:
-  author: foo
+  author: David Danielsson
   description: myorg.custom_collection webserver Role
   company: myorg
 
@@ -15,9 +15,9 @@ galaxy_info:
   # - GPL-3.0-only
   # - Apache-2.0
   # - CC-BY-4.0
-  license: GPL-2.0-or-later
+  license: GPL-3.0-or-later
 
-  min_ansible_version: "2.14"
+  min_ansible_version: 2.16.0
 
   # If this a Container Enabled role, provide the minimum Ansible Container version.
   # min_ansible_container_version:

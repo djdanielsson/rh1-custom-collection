@@ -58,6 +58,6 @@ spec:
         - name: collection-bundle
           value: $(tasks.ansible-galaxy-collection-build.results.collection-bundle)
         - name: molecule-scenario
-          value: "database"
+          value: "all"
         - name: provisioner-environment-variable
           value: "kubernetes"

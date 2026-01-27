@@ -26,7 +26,6 @@ exclude_paths:
 mock_modules:
   - community.okd.k8s
   - kubernetes.core.k8s
-  - kubevirt.core.kubevirt_vm
 #   # note the foo.bar is invalid as being neither a module or a collection
 #   - fake_namespace.fake_collection.fake_module
 #   - fake_namespace.fake_collection.fake_module.fake_submodule
