@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ item.name }}"
+  namespace: "{{ item.namespace }}"
+  labels:
+    app: "molecule-test-container"
+    name: "{{ item.name }}"
+spec:
+  containers:
+    - name: molecule
+      image: "{{ item.image }}"
+{% if item.command is defined and item.command %}
+      command: ["sh", "-c"]
+      args:
+        - "{{ item.command }}"
+{% endif %}
+{% if item.env is defined and item.env %}
+      env:
+{% for env_item in item.env | dict2items %}
+        - name: "{{ env_item.key }}"
+          value: "{{ env_item.value }}"
+{% endfor %}
+{% endif %}
