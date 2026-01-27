@@ -1,0 +1,58 @@
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: extensions/molecule/provisioners/${PROVISIONER:-podman}/requirements.yml
+    force: true
+driver:
+  name: default
+  options:
+    managed: true
+    ansible_connection_options:
+      connection: local
+platforms:
+  - name: postgres16
+    groups:
+      - database
+    image: docker.io/postgres:16-trixie
+    env:
+      POSTGRES_PASSWORD: SecurePassword123
+    podman_network: ci-rh1-custom-collection
+    namespace: ${MOLECULE_NAMESPACE:-ci-rh1-custom-collection}
+  - name: postgres18
+    groups:
+      - database
+    image: docker.io/postgres:18-trixie
+    env:
+      POSTGRES_PASSWORD: SecurePassword123
+    podman_network: ci-rh1-custom-collection
+    namespace: ${MOLECULE_NAMESPACE:-ci-rh1-custom-collection}
+  - name: runner
+    groups:
+      - runner
+    namespace: ${MOLECULE_NAMESPACE:-ci-rh1-custom-collection}
+    image: ghcr.io/ansible/community-ansible-dev-tools:v25.9.0
+    command: sleep 1d
+    podman_network: ci-rh1-custom-collection
+provisioner:
+  name: ansible
+  playbooks:
+    converge: converge.yml
+    create: ../provisioners/${PROVISIONER:-podman}/create.yml
+    destroy: ../provisioners/${PROVISIONER:-podman}/destroy.yml
+    verify: verify.yml
+  inventory:
+    links:
+      group_vars: ../provisioners/${PROVISIONER:-podman}/group_vars/
+verifier:
+  name: ansible
+scenario:
+  name: database
+  test_sequence:
+    - dependency
+    - syntax
+    - create
+    - converge
+    - verify
+    - destroy
+...

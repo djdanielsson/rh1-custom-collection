@@ -11,3 +11,4 @@
       ansible.builtin.debug:
         var: lookup('env', item)
       with_items: "{{ lookup('env').keys() | list }}"
+...
