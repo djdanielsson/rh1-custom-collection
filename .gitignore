@@ -166,3 +166,9 @@ cython_debug/
 # Ansible
 .ansible/
 .vscode/
+.env.*
+*.pem
+*.key
+credentials.json
+.env.local
+.env.production
