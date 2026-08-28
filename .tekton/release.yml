@@ -4,9 +4,10 @@ metadata:
   name: ansible-galaxy-collection-release
   annotations:
     pipelinesascode.tekton.dev/task-1: "[git-clone]"
-    pipelinesascode.tekton.dev/task-2: "https://raw.githubusercontent.com/david-igou/tekton-ansible/refs/heads/main/task/ansible-galaxy-collection-build/ansible-galaxy-collection-build.yml"
-    pipelinesascode.tekton.dev/task-3: "https://raw.githubusercontent.com/david-igou/tekton-ansible/refs/heads/main/task/ansible-molecule/molecule-task.yml"
-    pipelinesascode.tekton.dev/task-4: "https://raw.githubusercontent.com/david-igou/tekton-ansible/refs/heads/main/task/ansible-galaxy-collection-publish/ansible-galaxy-collection-publish.yml"
+    pipelinesascode.tekton.dev/task-2: "https://raw.githubusercontent.com/djdanielsson/rh1-cluster-config/refs/heads/main/tekton-tasks/ansible-galaxy-collection-build-task.yml"
+    pipelinesascode.tekton.dev/task-3: "https://raw.githubusercontent.com/djdanielsson/rh1-cluster-config/refs/heads/main/tekton-tasks/molecule-task.yml"
+    pipelinesascode.tekton.dev/task-4: "https://raw.githubusercontent.com/djdanielsson/rh1-cluster-config/refs/heads/main/tekton-tasks/ansible-galaxy-collection-publish-task.yml"
+    pipelinesascode.tekton.dev/task-5: "https://raw.githubusercontent.com/djdanielsson/rh1-cluster-config/refs/heads/main/tekton-tasks/ansible-galaxy-collection-verify-task.yml"
     pipelinesascode.tekton.dev/on-event: "[push]"
     pipelinesascode.tekton.dev/on-target-branch: "[refs/tags/*]"
     pipelinesascode.tekton.dev/max-keep-runs: "3"
@@ -15,6 +16,9 @@ spec:
   - name: galaxy-credentials
     secret:
       secretName: galaxy-credentials
+  - name: galaxy-gpg-keyring
+    secret:
+      secretName: galaxy-gpg-keyring
   - name: aap-credentials
     secret:
       secretName: aap-admin-password
@@ -81,9 +85,25 @@ spec:
         - name: galaxy-credentials
           workspace: galaxy-credentials
 
-      - name: approve-collection-release
+      - name: ansible-galaxy-collection-verify
         runAfter:
         - ansible-galaxy-collection-publish
+        taskRef:
+          name: ansible-galaxy-collection-verify
+        params:
+        - name: COLLECTION
+          value: "myorg.custom_collection"
+        - name: VERSION
+          value: "{{ git_tag }}"
+        workspaces:
+        - name: galaxy-credentials
+          workspace: galaxy-credentials
+        - name: galaxy-gpg-keyring
+          workspace: galaxy-gpg-keyring
+
+      - name: approve-collection-release
+        runAfter:
+        - ansible-galaxy-collection-verify
         workspaces:
         - name: shared-workspace
           workspace: shared-workspace

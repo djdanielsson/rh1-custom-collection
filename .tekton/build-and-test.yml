@@ -6,6 +6,7 @@ metadata:
     pipelinesascode.tekton.dev/task-1: "[git-clone]"
     pipelinesascode.tekton.dev/task-2: "https://raw.githubusercontent.com/djdanielsson/rh1-cluster-config/refs/heads/main/tekton-tasks/ansible-galaxy-collection-build-task.yml"
     pipelinesascode.tekton.dev/task-3: "https://raw.githubusercontent.com/djdanielsson/rh1-cluster-config/refs/heads/main/tekton-tasks/molecule-task.yml"
+    pipelinesascode.tekton.dev/task-4: "https://raw.githubusercontent.com/djdanielsson/rh1-cluster-config/refs/heads/main/tekton-tasks/apme-policy-check-task.yml"
     pipelinesascode.tekton.dev/on-event: "[pull_request, push]"
     pipelinesascode.tekton.dev/on-target-branch: "[main]"
     pipelinesascode.tekton.dev/max-keep-runs: "3"
@@ -19,9 +20,13 @@ spec:
         resources:
           requests:
             storage: 1Gi
+  - name: apme-policies
+    configMap:
+      name: apme-org-policies
   pipelineSpec:
     workspaces:
     - name: shared-workspace
+    - name: apme-policies
     tasks:
       - name: fetch-source
         taskRef:
@@ -61,3 +66,14 @@ spec:
           value: "all"
         - name: provisioner-environment-variable
           value: "kubernetes"
+
+      - name: apme-policy-check
+        runAfter:
+        - molecule
+        taskRef:
+          name: apme-policy-check
+        workspaces:
+        - name: source
+          workspace: shared-workspace
+        - name: policies
+          workspace: apme-policies
